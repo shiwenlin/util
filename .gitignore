@@ -1,0 +1,11 @@
+# 本地记忆 / 会话数据（含个人信息，不入库）
+.workbuddy/
+
+# 依赖与缓存
+node_modules/
+*.log
+
+# 编辑器 / 系统
+.DS_Store
+Thumbs.db
+*.tmp

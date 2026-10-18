@@ -1,0 +1,1972 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>个护家清 · 标题与SKU搜索标题工作台</title>
+<style>
+:root{
+  --bg:#F7F6F3; --card:#FFFFFF; --line:#E3E1DA; --line2:#CFCBC0;
+  --tx:#2C2C2A; --tx2:#5F5E5A; --tx3:#8A8983;
+  --blue:#185FA5; --blue-bg:#E6F1FB; --teal:#0F6E56; --teal-bg:#E1F5EE;
+  --red:#A32D2D; --red-bg:#FCEBEB; --amber:#854F0B; --amber-bg:#FAEEDA;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:var(--bg);color:var(--tx);font:14px/1.6 -apple-system,"PingFang SC","Microsoft YaHei",sans-serif;padding:20px}
+.wrap{max-width:1280px;margin:0 auto}
+h1{font-size:18px;font-weight:500;margin-bottom:4px}
+.sub{font-size:13px;color:var(--tx2);margin-bottom:18px}
+.grid{display:grid;grid-template-columns:400px 1fr;gap:16px;align-items:start}
+@media(max-width:1000px){.grid{grid-template-columns:1fr}}
+.card{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:16px;margin-bottom:14px}
+.card h2{font-size:14px;font-weight:500;margin-bottom:12px;display:flex;align-items:center;gap:8px}
+.card h2 .n{width:20px;height:20px;border-radius:6px;background:var(--tx);color:#fff;font-size:11px;display:flex;align-items:center;justify-content:center}
+label{display:block;font-size:12px;color:var(--tx2);margin:10px 0 5px}
+label:first-child{margin-top:0}
+input[type=text],textarea,select{width:100%;border:1px solid var(--line2);border-radius:8px;padding:8px 10px;font:13px/1.5 inherit;background:#fff;color:var(--tx)}
+textarea{resize:vertical;min-height:110px;font-family:inherit}
+input:focus,textarea:focus,select:focus{outline:2px solid var(--blue);outline-offset:-1px;border-color:var(--blue)}
+.row2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.chips{display:flex;flex-wrap:wrap;gap:6px;margin-top:2px}
+.chip{border:1px solid var(--line2);background:#fff;border-radius:6px;padding:4px 9px;font-size:12px;cursor:pointer;color:var(--tx2);user-select:none}
+.chip:hover{border-color:var(--blue)}
+.chip.on{background:var(--blue-bg);border-color:var(--blue);color:var(--blue)}
+.chip .cx{margin-left:6px;opacity:.35;font-weight:700;padding:0 3px;border-radius:3px;line-height:1}
+.chip:hover .cx{opacity:.85}
+.chip .cx:hover{opacity:1;color:var(--red);background:var(--red-bg)}
+.chip.del{opacity:.55;border-style:dashed;color:var(--tx3);background:transparent}
+.chip.del .delw{text-decoration:line-through}
+.chip.del:hover{opacity:1;border-color:var(--teal);color:var(--teal);background:var(--teal-bg)}
+.chip.delhd{border-style:dashed;color:var(--tx3);background:transparent;font-size:11px;opacity:.75}
+.chip.delhd:hover{opacity:1;color:var(--teal);border-color:var(--teal)}
+.chip.undel{border-style:dashed;color:var(--teal);border-color:var(--teal);background:transparent;font-size:11.5px}
+.chip.undel:hover{background:var(--teal-bg)}
+.alts{margin-top:6px;display:flex;flex-direction:column;gap:3px}
+.altchip{display:block;font-size:11.5px;line-height:1.5;padding:4px 8px;border:1px dashed var(--line2);border-radius:6px;color:var(--tx2);cursor:pointer;background:#FCFCFB;user-select:none;word-break:break-all}
+.altchip:hover{background:var(--blue-bg);border-color:var(--blue);border-style:solid;color:var(--blue)}
+.altchip .lb{display:inline-block;font-weight:700;margin-right:4px;opacity:.9}
+.altchip .rt{opacity:.6;font-size:10.5px;margin-left:4px}
+.altchip .ln{float:right;font-weight:600;opacity:.7}
+.altchip.bad{border-color:var(--amber);color:var(--amber)}
+.althd{font-size:11px;color:var(--tx3);margin-top:6px;letter-spacing:.3px}
+.svrow{display:flex;align-items:flex-start;gap:6px}
+.svrow .sv{flex:1;outline:none;border-radius:4px;padding:1px 3px;margin:-1px -3px;min-width:0}
+.svrow .sv:focus{background:#fff;box-shadow:0 0 0 2px var(--blue-bg)}
+.cpb{flex:none;font-size:11px;color:var(--blue);border:1px solid var(--line2);border-radius:5px;padding:2px 8px;cursor:pointer;background:#fff;user-select:none;white-space:nowrap}
+.cpb:hover{background:var(--blue-bg);border-color:var(--blue)}
+.cpb.ok,.altchip.copied{background:var(--teal-bg)!important;border-color:var(--teal)!important;color:var(--teal)!important;border-style:solid!important}
+.markw{margin-top:4px}
+.tbox .use{float:right;font-size:11px;color:var(--blue);cursor:pointer;margin-left:10px}
+.tbox .use.ok{color:var(--teal);font-weight:600}
+#toast{position:fixed;left:50%;bottom:26px;transform:translateX(-50%) translateY(8px);background:rgba(22,40,58,.95);color:#fff;font-size:12.5px;line-height:1.5;padding:9px 14px;border-radius:8px;opacity:0;pointer-events:none;transition:opacity .18s,transform .18s;z-index:9999;max-width:78vw;word-break:break-all;box-shadow:0 4px 18px rgba(0,0,0,.18)}
+#toast.on{opacity:1;transform:translateX(-50%) translateY(0)}
+
+.chip.maybe{border-style:dashed;color:var(--tx3);background:transparent}
+.chip.maybe:hover{border-color:var(--teal);color:var(--teal)}
+.chip.on.warn{background:var(--teal-bg);border-color:var(--teal);color:var(--teal)}
+.chip.on.warn{background:var(--teal-bg);border-color:var(--teal);color:var(--teal)}
+button{font:13px inherit;border-radius:8px;border:1px solid var(--line2);background:#fff;padding:9px 14px;cursor:pointer;color:var(--tx)}
+button:hover{border-color:var(--blue);color:var(--blue)}
+button.pri{background:var(--blue);border-color:var(--blue);color:#fff;font-size:14px;width:100%;padding:11px}
+button.pri:hover{opacity:.9;color:#fff}
+.hint{font-size:12px;color:var(--tx3);margin-top:6px;line-height:1.5}
+.tbox{border:1px solid var(--line);border-radius:8px;padding:10px 12px;background:#FCFCFB;margin-bottom:8px}
+.tbox .lab{font-size:11px;color:var(--tx3);margin-bottom:4px}
+.tbox .val{font-family:ui-monospace,Menlo,Consolas,monospace;font-size:13px;line-height:1.5;word-break:break-all}
+.tbox .cnt{float:right;font-size:11px;color:var(--tx3)}
+.tbox.sel{border-color:var(--blue);background:var(--blue-bg)}
+table{width:100%;border-collapse:collapse;font-size:13px}
+th{text-align:left;font-weight:500;font-size:12px;color:var(--tx2);padding:7px 8px;border-bottom:1px solid var(--line2);white-space:nowrap}
+td{padding:8px;border-bottom:1px solid var(--line);vertical-align:top}
+tr:last-child td{border-bottom:none}
+.mono{font-family:ui-monospace,Menlo,Consolas,monospace;font-size:12px}
+.tag{display:inline-block;font-size:11px;padding:2px 7px;border-radius:5px;background:var(--bg);color:var(--tx2);border:1px solid var(--line);white-space:nowrap}
+.tag.g{background:var(--teal-bg);color:var(--teal);border-color:#9FE1CB}
+.tag.r{background:var(--red-bg);color:var(--red);border-color:#F7C1C1}
+.tag.a{background:var(--amber-bg);color:var(--amber);border-color:#FAC775}
+.alert{border-radius:8px;padding:10px 12px;font-size:13px;margin-bottom:8px}
+.alert.r{background:var(--red-bg);border:1px solid #F7C1C1;color:#791F1F}
+.alert.ok{background:var(--teal-bg);border:1px solid #9FE1CB;color:#085041}
+.alert.a{background:var(--amber-bg);border:1px solid #FAC775;color:#633806}
+.ban{display:flex;gap:8px;align-items:baseline;padding:6px 0;border-bottom:1px dashed var(--line);font-size:13px}
+.ban:last-child{border:none}
+.ban b{color:var(--red);font-weight:500}
+.ban span{color:var(--tx2)}
+.empty{color:var(--tx3);font-size:13px;padding:24px 0;text-align:center}
+.foot{display:flex;gap:8px;margin-top:10px;flex-wrap:wrap}
+.kv{font-size:12px;color:var(--tx2);background:var(--bg);border-radius:6px;padding:8px 10px;margin-top:8px;line-height:1.6}
+.season{font-size:12px;color:var(--tx2);background:var(--blue-bg);border-radius:8px;padding:9px 11px;margin-top:10px;color:#0C447C}
+button.mini{font-size:12px;padding:6px 11px;margin-top:6px}
+.chk{display:flex;gap:8px;align-items:flex-start;font-size:12px;color:var(--tx2);margin:10px 0 5px;line-height:1.5}
+.chk input{margin-top:2px;flex:none}
+.pbox{background:var(--bg);border:1px solid var(--line);border-radius:8px;padding:10px;font-size:12px;color:var(--tx2);white-space:pre-wrap;max-height:220px;overflow:auto;font-family:ui-monospace,Menlo,Consolas,monospace;line-height:1.55}
+.resbox{border:1px solid #9FE1CB;background:var(--teal-bg);border-radius:8px;padding:9px 11px;margin-top:8px;font-size:12px;color:#085041;line-height:1.6}
+.lic{border-left:3px solid var(--teal);background:var(--teal-bg);border-radius:0 8px 8px 0;padding:9px 11px;margin-top:8px;font-size:12px;color:#085041}
+.lic.off{border-left-color:var(--amber);background:var(--amber-bg);color:#633806}
+</style>
+</head>
+<body>
+<div class="wrap">
+<h1>个护家清 · 标题与SKU搜索标题工作台</h1>
+<p class="sub">2026 搜索下沉到 SKU 级 · 商品标题 60字符 · SKU搜索标题 15汉字（30字符）· 自带违禁词拦截</p>
+
+<div class="grid">
+<div>
+  <div class="card">
+    <h2><span class="n">0</span>商品速查 · 先查品，再选词</h2>
+    <label>输入你的商品名（含品牌+功效更好），自动识别品类并生成联网研究指令</label>
+    <input type="text" id="pname" placeholder="例：蓝月亮抑菌洗手液">
+    <button class="mini" id="btnGuess">① 识别品类</button>
+    <button class="mini" id="btnPrompt">② 生成联网研究指令</button>
+    <div id="guessInfo" class="hint">未识别 · 也可直接在下方手动选类目</div>
+    <div id="promptWrap" style="display:none">
+      <label>把这段指令丢给 AI / 搜索框去查（查的是真实在售信息，不是猜）</label>
+      <div class="pbox" id="promptTxt"></div>
+      <button class="mini" id="btnCopy">复制指令</button>
+      <label>把查到的结果粘回来 → 自动拆成卖点 / 人群 / 场景 / 热搜词</label>
+      <textarea id="research" style="min-height:120px" placeholder="粘贴联网查到的内容，按段落写最准：&#10;功能点：去污渍 去血渍 留香 温和&#10;规格：500g瓶 1kg瓶 袋装补充装&#10;人群：学生 学生党&#10;场景：手洗 内衣裤 宿舍&#10;热搜词：手洗洗衣液学生宿舍 · 洗衣液去血渍&#10;祛除（本品不可用）：除菌 抑菌 除螨&#10;&#10;词之间用空格或顿号隔开；标签写「祛除/禁用」的那行会自动剔除，不进标题。"></textarea>
+      <button class="mini" id="btnParse">③ 解析并回填词池</button>
+      <div id="resInfo"></div>
+    </div>
+  </div>
+
+  <div class="card">
+    <h2><span class="n">1</span>基础信息</h2>
+    <label>品牌词（自有大品牌，会占标题前部）</label>
+    <input type="text" id="brand" placeholder="例：蓝月亮">
+    <div class="chk">
+      <input type="checkbox" id="licensed">
+      <span><b>我有功效资质</b>（消字号 / 国妆特字 / 第三方检测报告）— 勾选后「抑菌、除菌、杀菌、99.9%」等高流量功效词<b>原样保留</b>不替换；未勾选则标黄提示需资质，仍保留在标题里由你决定。</span>
+    </div>
+    <div class="lic off" id="licBox">当前：未勾选资质 · 功效词会<b>保留</b>但标黄提醒，请自行确认资质后再上架</div>
+    <div class="row2" style="margin-top:10px">
+      <div>
+        <label>二级类目</label>
+        <select id="cat2"></select>
+      </div>
+      <div>
+        <label>三级品类</label>
+        <select id="cat3"></select>
+      </div>
+    </div>
+    <label>主打月份</label>
+    <select id="month"></select>
+    <div class="season" id="seasonBox"></div>
+    <div class="kv" id="banBox"></div>
+  </div>
+
+  <div class="card">
+    <h2><span class="n">2</span>卖点 / 人群 / 场景</h2>
+    <p class="hint" style="margin:-2px 0 8px">词池按「搜索价值」排序：<b>热搜词（有真实搜索量）</b> &gt; 商品名自带 &gt; 研究回填词 &gt; 品类内置通用词。每个池只取前 20 个，<b>超出的直接舍弃</b>——不展示、也不进 SKU 补位池。鼠标悬停词可看来源。</p>
+    <label>核心卖点 <span id="sellCnt" class="tag"></span></label>
+    <div class="chips" id="cSell"></div>
+    <label>目标人群 <span id="crowdCnt" class="tag"></span></label>
+    <div class="chips" id="cCrowd"></div>
+    <label>使用场景 <span id="sceneCnt" class="tag"></span></label>
+    <div class="chips" id="cScene"></div>
+    <label>规格概览（写进商品标题的容量/组合，可留空）</label>
+    <input type="text" id="specAll" placeholder="例：500ml*2瓶">
+    <div class="hint">
+      <b>实线蓝框</b>=已选，按选中顺序<b>优先写进商品标题</b>（60字符放不下会自动截断）；
+      <b>虚线灰框</b>=备选，不进商品标题，但会<b>自动补位到各 SKU 搜索标题</b>。<br>
+      所以抽到的词不用删——选 3~4 个主攻商品标题，剩下的靠 SKU 标题消化掉，一条链接能多覆盖十几个搜索入口。<br>
+      <b>SKU 越多，消化越多</b>：每条 SKU 有 2 个意图位，6 条 ≈ 消化 6~8 个备选词，10 条 ≈ 14 个。一条词只占一个入口，不会重复。<br>
+      <b>不想要的词：点词右侧 × 删除</b> → 该词<b>全局禁用</b>（商品标题、SKU 主推与备选都不会再用，SKU 名里自带的同源词也一起跳过），
+      已删的词折叠在词池末尾（点 <span class="tag">🗑 已删 N · 展开恢复</span> 可逐条恢复），删完自动重算。<br>
+      <b>删掉的词不会「腾位子」给没展示出来的词</b> —— 池子只减不增，所以不会越删越多。
+    </div>
+  </div>
+
+  <div class="card">
+    <h2><span class="n">3</span>SKU 清单</h2>
+    <label>每行一个 SKU，可带价格（用 | 或 空格分隔）</label>
+    <textarea id="skus">500ml单瓶
+500ml*2瓶
+300ml单瓶
+儿童款300ml
+1L补充装</textarea>
+    <div class="hint">例：<span class="mono">500ml*2瓶 | 39.9</span>　带价格会自动做「价差 / 低价引流」检查</div>
+    <label>主推 SKU（排 1 号位，搜索页优先展示它）</label>
+    <select id="hero"></select>
+    <label>热搜词 CSV（生意参谋导出，可选）</label>
+    <input type="file" id="csvFile" accept=".csv,.txt">
+    <div class="hint" id="csvInfo">未导入 · 将使用内置词根库（离线推算，未经数据校验）</div>
+    <div class="chk">
+      <input type="checkbox" id="strictSrc" checked>
+      <span><b>严格模式：属性词必须真实具备（推荐）</b> — SKU 标题里的词只能来自 ① 该 SKU 自己的规格名 ② 你粘回来的研究词池 ③ 你勾选的卖点/人群/场景。<b>禁用内置品类词库兜底 + 禁用借用别的 SKU 的词</b>；词不够就留空并提示补词，绝不拿通用词填坑（避免虚假宣传 + 要素不一致）。</span>
+    </div>
+    <div class="lic off" id="strictBox">当前：严格模式 · 内置词与借用词不会进标题</div>
+  </div>
+
+  <button class="pri" id="go">生成标题与 SKU 搜索标题</button>
+  <div class="foot">
+    <button id="expCsv">导出 CSV</button>
+    <button id="expMd">导出 Markdown</button>
+    <button id="copyPrompt">复制检索指令</button>
+  </div>
+</div>
+
+<div>
+  <div class="card">
+    <h2><span class="n">4</span>商品标题（60字符 / 30汉字）— 点选你要的那条</h2>
+    <div id="titles"><p class="empty">先在左侧配置，点「生成」</p></div>
+  </div>
+
+  <div class="card">
+    <h2><span class="n">5</span>SKU 搜索标题（每条 ≤15汉字 / 30字符）</h2>
+    <div id="skuOut"><p class="empty">—</p></div>
+  </div>
+
+  <div class="card">
+    <h2><span class="n">6</span>合规自检</h2>
+    <div id="compliance"><p class="empty">—</p></div>
+  </div>
+
+  <div class="card">
+    <h2><span class="n">7</span>SKU 搜索主图指令</h2>
+    <div id="imgOut"><p class="empty">—</p></div>
+  </div>
+</div>
+</div>
+</div>
+
+<script>
+/* ============ 品类配置库：A2 身体护理 / D 衣物洗护 / E1 家庭清洁剂 ============ */
+var CAT = {
+A2:{name:"身体护理",sub:{
+ handwash:{n:"洗手液",core:["洗手液","泡沫洗手液","洗手液"],
+  sell:["泡沫","氨基酸","滋润","温和","清爽","不干手","持久留香","补水","按压式","易冲洗"],
+  crowd:["儿童","成人","敏感肌","母婴","男士","学生","全家"],
+  scene:["家用","厨房","卫生间","便携","办公室","学生宿舍","车载","公共卫生间"],
+  specHint:["300ml","500ml","1L","单瓶","2瓶装","补充装","旅行装"],
+  ban:["抑菌","除菌","杀菌","灭菌","消炎","抗菌99","抗病毒","99%除菌"],
+  sea:{up:["10月-次年2月 秋冬手部干燥 + 流感季 + 双11囤货","9月 开学季便携装"],down:["6-8月 需求平稳"]}},
+ shower:{n:"沐浴露",core:["沐浴露","沐浴乳","沐浴液"],
+  sell:["氨基酸","滋润","清爽","留香持久","不假滑","易冲洗","温和","控油","去角质","保湿"],
+  crowd:["男士","女士","儿童","敏感肌","干皮","油皮","全家"],
+  scene:["家用","浴室","旅行装","宿舍","健身房","酒店同款"],
+  specHint:["500ml","720ml","1L","单瓶","2瓶装","替换装","旅行装"],
+  ban:["美白","祛痘","除螨","治疗皮炎","消炎"],
+  sea:{up:["5-8月 清爽控油走量","10-2月 滋润保湿上行"],down:["3-4月 平稳"]}},
+ soap:{n:"香皂",core:["香皂","手工皂","洁面皂"],
+  sell:["手工","氨基酸","温和","滋润","清爽","除螨","留香","植物配方","不紧绷"],
+  crowd:["男士","女士","儿童","敏感肌","全家"],
+  scene:["洗手","洗脸","沐浴","旅行","酒店","宿舍"],
+  specHint:["100g","120g","单块","3块装","5块装","礼盒装"],
+  ban:["除螨","祛痘","消炎","美白","治疗湿疹"],
+  sea:{up:["5-8月 清爽型","12-1月 年货礼盒"],down:["3-4月"]}},
+ handcream:{n:"护手霜",core:["护手霜","手部护理霜","润手霜"],
+  sell:["滋润","保湿","不油腻","防干裂","细腻","快速吸收","持久","修护","香氛","便携"],
+  crowd:["女士","男士","儿童","干皮","手部粗糙","孕妇"],
+  scene:["秋冬","办公室","家务后","随身携带","睡前","通勤"],
+  specHint:["30g","50g","75g","单支","3支装","礼盒装","套装"],
+  ban:["治疗皲裂","消炎","医用","特效","根治"],
+  sea:{up:["10月-次年2月 绝对旺季，防干裂/滋润词优先"],down:["5-8月 淡季"]}},
+ bodylotion:{n:"身体乳",core:["身体乳","身体乳","润肤乳"],
+  sell:["保湿","滋润","不油腻","美白","细腻","持久留香","修护","清爽","身体护理"],
+  crowd:["女士","男士","干皮","敏感肌","孕妇","学生"],
+  scene:["秋冬","洗澡后","睡前","全身","办公室","空调房"],
+  specHint:["100ml","250ml","400ml","单瓶","2瓶装","大瓶装"],
+  ban:["美白（无特证）","祛斑","治疗","医用"],
+  sea:{up:["10月-次年3月 旺季，干燥季节"],down:["6-8月 清爽型"]}},
+ deo:{n:"走珠/止汗露",core:["止汗露","走珠","香体露","止汗滚珠"],
+  sell:["清爽","止汗","持久","无香","淡香","不黏腻","温和","便携","抑味"],
+  crowd:["男士","女士","学生","运动人群","易汗体质"],
+  scene:["夏天","运动","通勤","腋下","军训","出差"],
+  specHint:["30ml","50ml","单瓶","2瓶装","套装"],
+  ban:["除臭","治疗狐臭","根治","医用","抑制汗腺"],
+  sea:{up:["5-8月 绝对旺季"],down:["11-3月 淡季，可主打礼盒/囤货"]}},
+ depil:{n:"脱毛刀/膏",core:["脱毛膏","脱毛刀","剃毛器","脱毛慕斯"],
+  sell:["温和","不刺激","快速","干净","无痛","细致","适合敏感肌","男女通用"],
+  crowd:["女士","男士","敏感肌","学生"],
+  scene:["腋下","腿部","手臂","比基尼","面部","全身","夏季"],
+  specHint:["50g","100g","单支","套装","刀头替换装"],
+  ban:["永久脱毛","绝毛","抑制毛发生长","脱毛（2026起该功效已废除）","医用"],
+  sea:{up:["4-7月 旺季，夏季前爆发"],down:["11-2月 淡季"]}},
+ footmask:{n:"手膜/足膜",core:["足膜","手膜","手足膜","足部护理膜"],
+  sell:["滋润","去角质","嫩滑","保湿","修护","软化","温和","足部护理"],
+  crowd:["女士","男士","足部干燥","家务人群"],
+  scene:["秋冬","睡前","泡脚后","穿凉鞋前","居家"],
+  specHint:["1对","3对","5对","单盒","套装"],
+  ban:["治疗脚气","根治","去死皮（过度承诺）","医用"],
+  sea:{up:["4-6月 穿凉鞋前","10-2月 防干裂"],down:["7-9月"]}}
+}},
+D:{name:"衣物洗护",sub:{
+ liquid:{n:"洗衣液",core:["洗衣液","洗衣液","衣物清洁液"],
+  sell:["深层洁净","留香持久","柔顺","护色","机洗手洗","低泡易漂","浓缩","除渍","温和","天然"],
+  crowd:["母婴","婴儿","全家","内衣专用","敏感肌","学生"],
+  scene:["机洗","手洗","家用","宿舍","内衣","宝宝衣物","床单被套"],
+  specHint:["1kg","2kg","3kg","单瓶","2瓶装","袋装补充装","大桶装"],
+  ban:["除菌","杀菌","抑菌（需消字号）","99%除菌","防病毒"],
+  sea:{up:["10-11月 双11囤大桶","3-5月 换季洗护"],down:["1-2月 春节前后物流停摆"]}},
+ beads:{n:"洗衣凝珠",core:["洗衣凝珠","洗衣珠","凝珠"],
+  sell:["一颗搞定","浓缩","留香","护色","柔顺","洁净","方便","不脏手","定量"],
+  crowd:["家庭","租房","学生","懒人","母婴"],
+  scene:["机洗","家用","宿舍","旅行","租房","快洗"],
+  specHint:["20颗","50颗","100颗","单盒","2盒装","家庭装"],
+  ban:["除菌","杀菌","抑菌","抗菌99"],
+  sea:{up:["10-11月 双11囤货","6-8月 高频洗衣"],down:["1-2月"]}},
+ powder:{n:"洗衣粉",core:["洗衣粉","洗衣粉","衣物清洁粉"],
+  sell:["强力去渍","深层洁净","低泡易漂","实惠","大袋","机洗手洗","增白"],
+  crowd:["家庭","学生","租房","工装"],
+  scene:["机洗","手洗","家用","宿舍","重污衣物","工作服"],
+  specHint:["1kg","2kg","5kg","单袋","2袋装","大袋装"],
+  ban:["除菌","杀菌","抑菌","强力漂白（损伤承诺）"],
+  sea:{up:["10-11月 囤货","3-5月 换季"],down:["1-2月"]}},
+ laundrysoap:{n:"洗衣皂",core:["洗衣皂","肥皂","衣物皂"],
+  sell:["强力去渍","温和","不伤手","实惠","天然植物","易漂洗","增白"],
+  crowd:["家庭","母婴","手洗人群"],
+  scene:["手洗","内衣","婴儿衣物","领口袖口","局部去渍"],
+  specHint:["100g","200g","单块","5块装","10块装"],
+  ban:["除菌","杀菌","抑菌","治疗"],
+  sea:{up:["5-8月 手洗高频","10-11月 囤货"],down:["12-2月"]}},
+ softener:{n:"柔顺剂",core:["柔顺剂","衣物柔顺剂","护理剂"],
+  sell:["柔软","防静电","留香持久","护色","不伤衣","亲肤","蓬松"],
+  crowd:["家庭","母婴","婴儿","敏感肌","女生"],
+  scene:["机洗","毛毯","毛衣","床品","婴儿衣物","秋冬静电"],
+  specHint:["1L","2L","3L","单瓶","2瓶装","补充装"],
+  ban:["除菌","杀菌","抑菌","抗过敏（绝对化）"],
+  sea:{up:["10-2月 秋冬静电季","10-11月 囤货"],down:["6-8月"]}},
+ collar:{n:"衣领净",core:["衣领净","衣领净","领口清洁剂"],
+  sell:["强力去渍","免搓洗","针对领口袖口","方便","深层","快速","不伤衣"],
+  crowd:["家庭","上班族","学生","衬衫人群"],
+  scene:["衬衫领口","袖口","局部去渍","干洗前处理","工作服"],
+  specHint:["200ml","500ml","单瓶","喷雾装","2瓶装"],
+  ban:["除菌","杀菌","100%去渍","彻底去除"],
+  sea:{up:["3-5月 换季洗衬衫","10-11月"],down:["1-2月"]}},
+ bleach:{n:"漂白水/彩漂",core:["彩漂","漂白水","衣物漂白剂"],
+  sell:["增白","去黄","护色","不掉色","温和","恢复洁白","去渍"],
+  crowd:["家庭","白衬衫人群","母婴"],
+  scene:["白衣","彩色衣物","发黄衣物","毛巾","床品","厨房抹布"],
+  specHint:["500ml","1L","单瓶","2瓶装"],
+  ban:["除菌","杀菌","抑菌","100%增白"],
+  sea:{up:["3-5月 换季去黄","10-11月"],down:["1-2月"]}},
+ scentbeads:{n:"衣物留香珠",core:["留香珠","衣物留香珠","香氛珠"],
+  sell:["留香持久","香氛","持久","护衣","柔顺","清新","持久30天"],
+  crowd:["女生","家庭","租房","学生"],
+  scene:["机洗","衣柜","床品","运动服","约会","日常"],
+  specHint:["100g","200g","单盒","2盒装","混合装"],
+  ban:["除菌","杀菌","永久留香","30天留香（无依据）"],
+  sea:{up:["5-8月 汗味场景","10-11月 囤货"],down:["1-2月"]}},
+ disliquid:{n:"衣物消毒液",core:["衣物消毒液","衣物除菌液","衣物清洁液"],
+  sell:["温和","无刺激","母婴可用","内衣专用","无残留","气味清新","浓缩"],
+  crowd:["母婴","婴儿","内衣","敏感肌","家庭"],
+  scene:["内衣","婴儿衣物","床品","混洗","洗衣机槽","贴身衣物"],
+  specHint:["500ml","1L","单瓶","2瓶装","补充装"],
+  ban:["除菌","杀菌","抑菌","灭活病毒","预防疾病","99.9%（需消字号检测报告，且不得宣称防疫）"],
+  sea:{up:["10-次年2月 流感季","3-5月 换季"],down:["6-8月"]}},
+ dryclean:{n:"干洗剂",core:["干洗剂","衣物干洗剂","免水洗清洁剂"],
+  sell:["免水洗","快速去渍","方便","便携","不伤衣","即喷即净","居家干洗"],
+  crowd:["上班族","出差","家庭","租房"],
+  scene:["局部去渍","西装","羽绒服","出差","应急","免水洗"],
+  specHint:["100ml","200ml","单瓶","喷雾装","套装"],
+  ban:["除菌","杀菌","100%去渍","干洗店级（夸大）"],
+  sea:{up:["11-1月 羽绒服/大衣季","3-5月"],down:["6-8月"]}}
+}},
+E1:{name:"家庭清洁剂",sub:{
+ dish:{n:"洗洁精",core:["洗洁精","洗洁精","餐具清洁剂"],
+  sell:["去油强","不伤手","温和","易冲洗","无残留","浓缩","食品级","柠檬","天然"],
+  crowd:["家庭","母婴","厨房","餐饮","租房"],
+  scene:["厨房","餐具","锅具","果蔬","婴儿奶瓶","去油"],
+  specHint:["500g","1kg","1.5kg","单瓶","2瓶装","袋装补充装","大桶装"],
+  ban:["除菌","杀菌","抑菌","无毒","可食用","100%去油"],
+  sea:{up:["12-1月 年末厨房大扫除 + 年货囤货","10-11月 双11"],down:["2-3月 春节后"]}},
+ degreaser:{n:"油污净",core:["油污净","厨房油污清洁剂","重油清洁剂"],
+  sell:["强力去油","免拆洗","快速分解","去重油","柠檬配方","不刺鼻","泡沫型"],
+  crowd:["家庭","厨房","餐饮","租房"],
+  scene:["油烟机","灶台","厨房墙面","锅底","烧烤架","微波炉"],
+  specHint:["500ml","1L","单瓶","喷雾装","2瓶装","套装"],
+  ban:["除菌","杀菌","100%去油","瞬间分解（夸大）"],
+  sea:{up:["12-1月 年末大扫除绝对旺季","10-11月"],down:["3-4月"]}},
+ toilet:{n:"洁厕剂",core:["洁厕剂","洁厕灵","马桶清洁剂"],
+  sell:["强力去垢","除尿垢","清香","不腐蚀","挂壁持久","方便","蓝泡泡"],
+  crowd:["家庭","租房","酒店","办公"],
+  scene:["马桶","卫生间","蹲厕","除黄渍","除异味","日常清洁"],
+  specHint:["500ml","1L","单瓶","2瓶装","挂壁球","套装"],
+  ban:["除菌","杀菌","抑菌","消毒","去除病毒"],
+  sea:{up:["12-1月 年末大扫除","10-11月 囤货"],down:["2-3月"]}},
+ floor:{n:"地板清洁剂",core:["地板清洁剂","地板清洁片","木地板清洁剂"],
+  sell:["不伤地板","速干","不留水痕","养护","光亮","防滑","清香","浓缩"],
+  crowd:["家庭","母婴","养宠家庭","木地板","瓷砖"],
+  scene:["木地板","瓷砖","大理石","拖地","宠物家庭","婴儿爬行"],
+  specHint:["500ml","1L","单瓶","清洁片","2瓶装","套装"],
+  ban:["除菌","杀菌","抑菌","防滑（绝对化）","永久光亮"],
+  sea:{up:["12-1月 年末大扫除","3-5月 春季清洁"],down:["1-2月"]}},
+ glass:{n:"玻璃清洁剂",core:["玻璃清洁剂","玻璃水","镜子清洁剂"],
+  sell:["不留水痕","速干","透亮","防雾","去污","喷雾方便","无痕"],
+  crowd:["家庭","办公","车主","租房"],
+  scene:["窗户","镜子","玻璃门","车窗","淋浴房","阳台"],
+  specHint:["500ml","1L","单瓶","喷雾装","2瓶装"],
+  ban:["除菌","杀菌","永久防雾","100%透亮"],
+  sea:{up:["12-1月 擦窗季","3-5月"],down:["6-8月"]}},
+ drain:{n:"管道疏通剂",core:["管道疏通剂","下水道疏通剂","管道通"],
+  sell:["强力疏通","溶解堵塞","免拆管","快速","不伤管道","颗粒型","凝胶型"],
+  crowd:["家庭","租房","餐饮","老旧管道"],
+  scene:["厨房水槽","地漏","马桶","浴室下水道","油污堵塞","头发堵塞"],
+  specHint:["200g","500g","1kg","单瓶","颗粒装","2瓶装"],
+  ban:["100%疏通","万能","彻底解决","不伤任何管道（绝对化）"],
+  sea:{up:["12-1月 年末 + 油脂凝固季","10-11月"],down:["6-8月"]}},
+ mold:{n:"除霉剂",core:["除霉剂","除霉剂","墙体除霉剂"],
+  sell:["快速除霉","免刷洗","不伤墙面","深层渗透","去黑斑","防霉","凝胶型"],
+  crowd:["家庭","租房","南方回南天","卫生间"],
+  scene:["卫生间","墙角","瓷砖缝","冰箱密封条","洗衣机胶圈","窗台"],
+  specHint:["200ml","500ml","单瓶","凝胶装","2瓶装"],
+  ban:["除菌","杀菌","抑菌","永久防霉","彻底根治"],
+  sea:{up:["2-4月 回南天/梅雨季绝对旺季","6-7月 南方梅雨"],down:["10-12月"]}},
+ ac:{n:"空调清洁剂",core:["空调清洁剂","空调清洗剂","空调除垢剂"],
+  sell:["免拆洗","强力除垢","去异味","泡沫型","养护","方便","家用"],
+  crowd:["家庭","租房","办公","车载"],
+  scene:["挂机","柜机","滤网","出风口","车载空调","夏季使用前"],
+  specHint:["300ml","500ml","单瓶","泡沫装","2瓶装","套装"],
+  ban:["除菌","杀菌","抑菌","消毒","预防空调病"],
+  sea:{up:["4-6月 夏季使用前绝对旺季"],down:["11-2月"]}},
+ multi:{n:"多功能清洁剂",core:["多功能清洁剂","万能清洁剂","家居清洁喷雾"],
+  sell:["一瓶多用","免水洗","快速去污","温和","清香","不伤表面","家用"],
+  crowd:["家庭","租房","办公","懒人"],
+  scene:["厨房","客厅","桌面","皮革","家电外壳","全屋清洁"],
+  specHint:["500ml","1L","单瓶","喷雾装","2瓶装","套装"],
+  ban:["万能（极限词风险）","除菌","杀菌","抑菌","100%清洁"],
+  sea:{up:["12-1月 年末大扫除","10-11月 囤货"],down:["2-3月"]}}
+}}
+};
+
+/* ============ 月份时段因子 ============ */
+var MONTH={
+1:{tag:["囤货","年货","大扫除","送礼"],note:"年末大扫除收尾 + 年货礼盒，家庭清洁全线走量；物流临近停摆，主打现货速发。"},
+2:{tag:["年货","开春","换季","除霉预备"],note:"春节月，上半月基本停摆；下半月开春换季、南方回南天除霉起量。"},
+3:{tag:["春季","换季","除霉","去黄"],note:"回南天/梅雨前奏，除霉剂、衣物去黄、换季洗护上行。"},
+4:{tag:["春季","除霉","脱毛","空调清洗"],note:"除霉剂旺季延续；脱毛类起量；空调清洗季开启。"},
+5:{tag:["夏季","清爽","止汗","驱蚊","空调清洗"],note:"高温前奏，走珠止汗、清爽型沐浴、空调清洁剂冲量。"},
+6:{tag:["夏季","清爽","控油","高频洗衣"],note:"高温高湿，清爽控油、高频洗衣、凝珠走量。"},
+7:{tag:["夏季","清爽","汗味","留香"],note:"汗味场景，留香珠、止汗露、清爽类持续走高。"},
+8:{tag:["夏季","开学预备","清爽"],note:"夏季尾声，开学季便携装、宿舍装开始起量。"},
+9:{tag:["开学季","便携","宿舍","学生"],note:"开学季：便携装、小规格、宿舍场景词必须进标题。"},
+10:{tag:["双11","秋冬","滋润","囤货"],note:"双11预售爆发 + 入冬转季。滋润/不干手/防干裂上行，囤货装转化最好。"},
+11:{tag:["双11","囤货","秋冬","保暖"],note:"双11正式爆发，囤货装、家庭装、大容量是主力规格。"},
+12:{tag:["囤货","年货","年末大扫除","送礼"],note:"家庭清洁全年最高峰（油污净/洁厕/玻璃/地板/管道全线爆发），年货礼盒起量。"}
+};
+
+/* ============ 合规词库 · 三档分级 ============
+   🔴 hard   ：绝对违禁（极限词 / 医疗疗效）。任何资质都不能用 → 强制替换
+   🟡 soft   ：资质条件词（抑菌/除菌/杀菌/99.9%…）。这些是真实高流量搜索词，
+               默认【保留】，只在合规报告里标注所需资质；无资质时点「一键替换」才改。
+               这是刻意的设计：先保流量，再谈合规。
+   🟢 其余   ：安全词，不干预
+================================================= */
+var BAN={
+ hard:["最佳","最优","最好","最大","最强","第一","唯一","首个","首家","顶级","极致","极品","国家级","世界级","全球级","全球首发","全网最低","最低价","底价","跳楼价","销量冠军","行业第一","史无前例","绝无仅有","无敌","王牌","至尊","权威认证","免检","老字号","首选","领导品牌","彻底","完全","永久","终身","永远","100%","百分百","绝对","零风险","包治","根治","无效退款","万能","最","治疗","预防疾病","预防新冠","消炎","灭菌","生发","防脱发","根治狐臭","治疗湿疹","治疗脚气","治疗皲裂","缓解","预防","改善","根治","药用","医用","疗效","排毒","祛湿","去角质","防断发","育发","脱毛","美乳","健美","除臭","祛斑","防晒","美白",
+ /* 促销词（SOP 明令禁止出现在标题/SKU搜索标题里） */
+ "包邮","秒杀","抢购","特价","清仓","亏本","买一送一","买1送1","买二送一","买2送1","买三送一","买五送二","买x送x","免费送","下单即送","拍下立减","限时抢购","限时特价","跳楼价","亏本处理","赠品","送赠品"],
+ hardRep:{ "彻底":"深层","完全":"充分","永久":"持久","终身":"长效","永远":"长效","100%":"充分","百分百":"充分","绝对":"充分","首选":"热门","顶级":"优质","极致":"出色","第一":"热销","唯一":"特色","销量冠军":"热销","全网最低":"实惠","最低价":"实惠装","万能":"多用途","根治":"改善","预防":"防护","治疗":"护理","缓解":"舒缓","预防疾病":"日常防护","包治":"护理","无效退款":"品质保障","消炎":"舒缓","灭菌":"洁净","生发":"养护","防脱发":"养护","药用":"护理","医用":"专业","美白":"提亮","祛斑":"匀净","防晒":"防护","除臭":"清新","排毒":"清爽","祛湿":"清爽","去角质":"温润","防断发":"养护","育发":"养护","脱毛":"清爽","美乳":"养护","健美":"塑形","根治狐臭":"清新","治疗湿疹":"护理","治疗脚气":"护理","治疗皲裂":"护理","预防新冠":"清洁","最":"超","最佳":"优质","最优":"优质","最好":"优质","最大":"大","最强":"强",
+ /* 促销信息一律转成「实际到手规格」表达（SOP：用户搜的是规格，不是促销） */
+ "买一送一":"2瓶装","买1送1":"2瓶装","买二送一":"3瓶装","买2送1":"3瓶装","买三送一":"4瓶装","买五送二":"7件装","买x送x":"多件装",
+ "包邮":"","秒杀":"","抢购":"","特价":"","清仓":"","亏本":"","免费送":"","下单即送":"","拍下立减":"","限时抢购":"","限时特价":"","跳楼价":"","亏本处理":"","赠品":"","送赠品":""},
+ /* 资质条件词：值 = 需要的资质/风险说明 */
+ soft:{
+  "抑菌":"需「消字号」卫生许可证 + 第三方抑菌率检测报告。头部品牌（蓝月亮/威露士等）在售标题普遍使用，是高流量词，有资质就别删。",
+  "除菌":"需消字号 + 除菌率检测报告。注意：除菌率数值必须有检测依据。",
+  "杀菌":"需消字号 + 杀菌率检测报告，宣称 ≥99% 需标注检测条件与菌种。",
+  "抗菌":"需抗菌检测报告。避免「抗菌99」这类无依据的绝对化写法。",
+  "消毒":"需消字号。非消毒产品不得宣称消毒，普通洗手液慎用。",
+  "除螨":"需除螨功效检测报告（家清类常见，织物/床品尤需）。",
+  "防病毒":"⚠ 涉疫宣称，平台高风险，建议改为「清洁」。",
+  "抗病毒":"⚠ 涉疫宣称，平台高风险，建议改为「清爽」。",
+  "抗过敏":"需人体功效评价报告（属化妆品功效宣称）。",
+  "99.9%":"需检测报告，且必须写明检测条件、作用时间、菌种，不得单独裸用。",
+  "99%":"需检测报告支撑。",
+  "除菌率99":"需检测报告支撑，写法建议：抑菌率99.9%（检测条件下）。",
+  "杀菌率99":"需检测报告支撑。",
+  "持久留香":"留香时长若无依据，建议改为「留香」。",
+  "30天留香":"需依据，无依据属夸大。",
+  "食品级":"⚠ 需食品接触材料检测报告，个护家清慎用。",
+  "无毒":"⚠ 绝对化安全宣称，需毒理检测报告。",
+  "可食用":"🔴 个护家清类绝对禁止。",
+  "孕妇可用":"需安全性评价依据，建议改为「温和配方」。",
+  "婴儿可用":"需明确适用年龄与依据，建议写明月龄。"
+ },
+ softRep:{ "抑菌":"洁净","除菌":"清洁","杀菌":"清洁","抗菌":"卫生","消毒":"清洁","除螨":"深层清洁","防病毒":"清洁","抗病毒":"清爽","抗过敏":"温和","99.9%":"高效","99%":"高效","除菌率99":"高效洁净","杀菌率99":"高效洁净","持久留香":"留香","30天留香":"留香","食品级":"温和配方","无毒":"温和","可食用":"温和","孕妇可用":"温和配方","婴儿可用":"温和配方" }
+};
+
+/* ============ 工具 ============ */
+function clen(s){var n=0;for(var i=0;i<s.length;i++){var c=s.charCodeAt(i);n+=(c>255)?2:1;}return n;}
+function cut(s,lim){var n=0,o="";for(var i=0;i<s.length;i++){var c=s.charCodeAt(i);var w=(c>255)?2:1;if(n+w>lim)break;o+=s[i];n+=w;}return o;}
+function uniq(a){var r=[],m={};a.forEach(function(x){if(x&&!m[x]){m[x]=1;r.push(x);}});return r;}
+function pack(parts,lim){
+  var out=[];var n=0;
+  parts.forEach(function(p){
+    if(!p) return;
+    if(out.indexOf(p)>-1) return;
+    var w=clen(p)+(out.length?1:0);
+    if(n+w>lim) return;
+    out.push(p); n+=w;
+  });
+  return out.join(" ");
+}
+/* SKU 搜索标题专用：结构 = 品牌 + 品类词 + 属性词 + 该SKU独有规格（无空格，省字符）
+   必保项 = 品类词 + 规格（缺一不可），品牌与属性词按剩余空间补。
+   依据 SOP：前段核心品类词（空间够时带品牌），后段该 SKU 独有规格属性。 */
+function packSku(brand,core,tags,spec,lim){
+  var must=[]; if(core) must.push(core); if(spec) must.push(spec);
+  var n=clen(must.join(""));
+  var picked=[];
+  [].concat(brand||[]).concat(tags||[]).forEach(function(p){
+    if(!p) return;
+    if(must.indexOf(p)>-1||picked.indexOf(p)>-1) return;
+    if(n+clen(p)<=lim){ picked.push(p); n+=clen(p); }
+  });
+  var head=[],tail=[];
+  picked.forEach(function(p){ if(p===brand) head.push(p); else tail.push(p); });
+  /* 一并返回「真正装进标题的意图词」——30 字符装不下时会自动截断，
+     intent / 合规标记必须按实际进标题的词算，不能按候选词算（否则报告与标题不符） */
+  return {text:head.concat([core]).concat(tail).concat([spec]).filter(Boolean).join(""),tags:tail};
+}
+/* 商品标题专用：按 SOP 位置优先级分段填充，填满 60 字符不留空
+   段1 前1-7字 品牌+品类 → 段2 第8-18字 功效属性 → 段3 第19-25字 规格场景 → 段4 第26-30字 长尾 */
+function buildTitle(seg1,seg2,seg3,seg4,fill,lim){
+  var parts=[],n=0;
+  function add(p){
+    if(!p) return false;
+    if(parts.indexOf(p)>-1) return false;
+    var w=clen(p)+(parts.length?1:0);
+    if(n+w>lim) return false;
+    parts.push(p); n+=w; return true;
+  }
+  (seg1||[]).forEach(add); (seg2||[]).forEach(add);
+  (seg3||[]).forEach(add); (seg4||[]).forEach(add);
+  (fill||[]).forEach(add);
+  return parts.join(" ");
+}
+function esc(s){return String(s).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;");}
+/* ===== ★ 删除的词 = 全局屏蔽 =====
+   用户点词右侧 × 删掉的词，商品标题、SKU 主推、SKU 3 条备选、以及 SKU 原文自带的同源词
+   全部不再使用；已删的词排在词池末尾，点 ↺ 可恢复。 */
+function isBlockedWord(w){
+  var b=(state&&state.blocked)||{};
+  return !!(w&&((b.sell||[]).indexOf(w)>-1||(b.crowd||[]).indexOf(w)>-1||(b.scene||[]).indexOf(w)>-1));
+}
+function blockedAll(){
+  var b=(state&&state.blocked)||{};
+  return uniq([].concat(b.sell||[],b.crowd||[],b.scene||[]));
+}
+function blockWord(kind,w){
+  if(!w) return;
+  var b=state.blocked[kind]=state.blocked[kind]||[];
+  if(b.indexOf(w)<0) b.push(w);
+  var i=state.vals[kind].indexOf(w); if(i>-1) state.vals[kind].splice(i,1);
+  renderChips();
+  if(LAST) run();          // 已生成过就立刻重算，删完马上看到效果
+}
+function unblockWord(kind,w){
+  var b=state.blocked[kind]||[];
+  var i=b.indexOf(w); if(i>-1) b.splice(i,1);
+  renderChips();
+  if(LAST) run();
+}
+function unblockAll(kind){
+  state.blocked[kind]=[]; renderChips(); if(LAST) run();
+}
+/* ===== 一键复制：点哪复制哪，不切换、不弹窗打断 ===== */
+function toast(m){var t=$("toast");if(!t)return;t.textContent=m;t.classList.add("on");clearTimeout(t._t);t._t=setTimeout(function(){t.classList.remove("on");},1800);}
+function cpFallback(txt,cb){
+  var ta=document.createElement("textarea");ta.value=txt;
+  ta.style.position="fixed";ta.style.top="-1000px";ta.style.opacity="0";
+  document.body.appendChild(ta);ta.focus();ta.select();
+  var done=false;try{done=document.execCommand("copy");}catch(e){done=false;}
+  document.body.removeChild(ta);
+  if(done)cb();else window.prompt("自动复制被浏览器拦了，请手动复制：",txt);
+}
+function cpText(txt,el){
+  txt=String(txt||"").replace(/\s+/g," ").trim();
+  if(!txt){toast("内容为空，没有可复制的");return;}
+  var flash=function(){
+    if(el){
+      if(el.getAttribute("data-o")==null)el.setAttribute("data-o",el.textContent);
+      var o=el.getAttribute("data-o");
+      el.textContent="已复制 \u2713";el.classList.add("ok");
+      clearTimeout(el._ct);el._ct=setTimeout(function(){el.textContent=o;el.classList.remove("ok");},1400);
+    }
+    toast("已复制（"+clen(txt)+" 字符）："+txt);
+  };
+  if(navigator.clipboard&&navigator.clipboard.writeText&&window.isSecureContext){
+    navigator.clipboard.writeText(txt).then(flash,function(){cpFallback(txt,flash);});
+  }else cpFallback(txt,flash);
+}
+function noSel(){try{var g=window.getSelection();return !g||String(g).length===0;}catch(e){return true;}}
+
+/* 合规扫描：分级返回，不做一刀切替换 */
+function scan(text){
+  var hard=[],soft=[];
+  Object.keys(BAN.soft).forEach(function(w){ if(text.indexOf(w)>-1) soft.push(w); });
+  BAN.hard.forEach(function(w){ if(text.indexOf(w)>-1 && hard.indexOf(w)<0 && soft.indexOf(w)<0) hard.push(w); });
+  Object.keys(BAN.hardRep).forEach(function(w){ if(text.indexOf(w)>-1 && hard.indexOf(w)<0 && soft.indexOf(w)<0) hard.push(w); });
+  return {hard:hard,soft:soft};
+}
+/* 生成时只强制替换 🔴 硬性违禁；🟡 资质词原样保留 */
+function fixText(text){
+  var out=text,log=[];
+  Object.keys(BAN.hardRep).forEach(function(w){
+    if(out.indexOf(w)>-1){ out=out.split(w).join(BAN.hardRep[w]); log.push(w+" → "+BAN.hardRep[w]); }
+  });
+  BAN.hard.forEach(function(w){
+    if(out.indexOf(w)>-1 && !BAN.hardRep[w]){ out=out.split(w).join(""); log.push(w+" → （删除）"); }
+  });
+  return {text:out.replace(/\s{2,}/g," ").trim(),log:log};
+}
+/* 无资质时的一键替换（用户主动点才触发） */
+function soften(text){
+  var out=text,log=[];
+  Object.keys(BAN.softRep).forEach(function(w){
+    if(out.indexOf(w)>-1){ out=out.split(w).join(BAN.softRep[w]); log.push(w+" → "+BAN.softRep[w]); }
+  });
+  return {text:out,log:log};
+}
+
+/* ============ 初始化 ============ */
+var $=function(id){return document.getElementById(id);};
+var state={hot:null,vals:{sell:[],crowd:[],scene:[]},res:null,autoSell:[],blocked:{sell:[],crowd:[],scene:[]}};
+/* ★ 词池硬上限：超过 20 个的一律舍弃——不展示、也不进 SKU 补位池。
+   理由：一个链接 6~10 个 SKU、意图位就那么多；排到 20 名以后的几乎都是品类
+   内置通用词，没有真实搜索量支撑，写进标题带不来搜索，反而稀释标题权重。 */
+var POOL_CAP=20;
+/* ★ 排序权重 = 「有没有真实搜索数据支撑」，不是按来源先后排 */
+var SRCW={hot:300, auto:200, res:100, dict:0};
+
+/* ★ 词归类：一个词属于 卖点/人群/场景 哪一类，用词典判定，不靠「它出现在哪一段」。
+   常见错位：热搜削词属性全进卖点池（「学生宿舍」）；粘贴时标错段（「真丝」写在场景段）。
+   X_* 是补充归类词典（只用于归类，不参与 dictScan 抽词，零回归风险）；
+   精确命中优先于包含命中；包含命中取最长，平手按 场景 > 人群 > 卖点。 */
+var X_SELL=["手洗","机洗","内衣","内衣裤","贴身衣物","真丝","毛类","羊毛","丝绸","棉麻","羽绒服","床单被套","婴儿衣物","宝宝衣物","娇贵衣物","干衣预涂","预涂","除渍","血渍","汗味","油渍","果汁","污渍","奶渍"];
+var X_CROWD=["住宿群体","差旅人士","贴身衣物用户","家庭主妇"];
+var X_SCENE=["学生宿舍"];
+function classifyWord(w){
+  if(!w) return null;
+  var i;
+  for(i=0;i<X_SELL.length;i++) if(w===X_SELL[i]) return "sell";
+  for(i=0;i<X_CROWD.length;i++) if(w===X_CROWD[i]) return "crowd";
+  for(i=0;i<X_SCENE.length;i++) if(w===X_SCENE[i]) return "scene";
+  var best=null,bl=0;
+  function scan(arr,cls){
+    if(!arr||!arr.length) return;   // 词典可能尚未赋值（init 早于词典定义执行）
+    for(var j=0;j<arr.length;j++){
+      if(w.indexOf(arr[j])>-1 && arr[j].length>bl){ best=cls; bl=arr[j].length; }
+    }
+  }
+  scan(X_SELL,"sell"); scan(X_CROWD,"crowd"); scan(X_SCENE,"scene");
+  if(best) return best;
+  scan(SCENEDIC,"scene"); scan(CROWDDIC,"crowd"); scan(SELLDIC,"sell");
+  return best;   // null = 三类词典都没命中 → 尊重它原来的归属
+}
+/* 研究文本三类词重新归桶（parseResearch 按段落分桶，段落标错时在此纠正） */
+function rebucketRes(r){
+  var out={}; for(var k in r) out[k]=r[k];
+  out.sell=[];out.crowd=[];out.scene=[];
+  ["sell","crowd","scene"].forEach(function(k){
+    (r[k]||[]).forEach(function(w){
+      var t=classifyWord(w)||k;
+      if(out[t].indexOf(w)<0) out[t].push(w);
+    });
+  });
+  return out;
+}
+var SRCLB={hot:"热搜词（有真实搜索量）", auto:"商品名自带", res:"研究回填词", dict:"品类内置通用词"};
+/* 商品标题最多吃 6 个卖点（60字符硬约束），人群/场景各 3 个。
+   超出的不必删 —— 未勾选的词会进 SKU 标题补位池，见 run() 里的 reserve */
+var MAXSEL={sell:6,crowd:3,scene:3};
+
+(function init(){
+  var c2=$("cat2");
+  Object.keys(CAT).forEach(function(k){var o=document.createElement("option");o.value=k;o.textContent=k+" "+CAT[k].name;c2.appendChild(o);});
+  c2.onchange=loadSub;
+  var m=$("month");
+  var now=new Date().getMonth()+1;
+  for(var i=1;i<=12;i++){var o=document.createElement("option");o.value=i;o.textContent=i+"月";m.appendChild(o);}
+  m.value=now; m.onchange=showSeason;
+  loadSub();
+  $("go").onclick=run;
+  $("expCsv").onclick=expCsv;
+  $("expMd").onclick=expMd;
+  $("copyPrompt").onclick=copyPrompt;
+  $("csvFile").onchange=readCsv;
+  $("skus").oninput=loadHero;
+  $("btnGuess").onclick=doGuess;
+  $("btnPrompt").onclick=function(){
+    doGuess(true);
+    $("promptTxt").textContent=buildPrompt();
+    $("promptWrap").style.display="block";
+  };
+  $("btnCopy").onclick=function(){
+    var t=$("promptTxt").textContent;
+    if(navigator.clipboard) navigator.clipboard.writeText(t);
+    else{var ta=document.createElement("textarea");ta.value=t;document.body.appendChild(ta);ta.select();document.execCommand("copy");ta.remove();}
+    var b=$("btnCopy"); b.textContent="已复制 ✓"; setTimeout(function(){b.textContent="复制指令";},1500);
+  };
+  $("btnParse").onclick=doParse;
+  $("strictSrc").onchange=function(){
+    var b=$("strictBox"), on=$("strictSrc").checked;
+    b.className=on?"lic":"lic off";
+    b.innerHTML=on?"当前：<b>严格模式</b> · 内置词与借用词不会进标题，词不够就留空"
+                  :"当前：<b>宽松模式</b> · 词池不够时用内置品类词兜底（需自行核实该属性是否真实具备）";
+    if(LAST) run();   // 已生成过就自动重跑，立刻看到差异
+  };
+  $("licensed").onchange=function(){
+    var b=$("licBox");
+    if($("licensed").checked){ b.className="lic"; b.innerHTML="当前：<b>已声明有资质</b> · 抑菌/除菌/杀菌/99.9% 等高流量功效词原样保留，不再提示"; }
+    else{ b.className="lic off"; b.innerHTML="当前：未勾选资质 · 功效词会<b>保留</b>但标黄提醒，请自行确认资质后再上架"; }
+  };
+})();
+
+function doGuess(silent){
+  var name=$("pname").value.trim();
+  if(!name){ if(!silent){$("guessInfo").innerHTML='<span class="tag a">请先输入商品名</span>';} return null; }
+  var g=guessCat(name);
+  // 从商品名里抽出功效/属性词，直接进卖点池
+  var auto=[];
+  ["抑菌","除菌","杀菌","抗菌","泡沫","氨基酸","芦荟","野菊花","柠檬","薰衣草","茶籽","清爽","滋润","温和","不干手","留香","免洗","便携","按压","补充装","食品级","除螨","去油","强力","深层","持久","护色","柔顺","清香","无香","儿童","母婴","男士","学生","敏感肌","全家","旅行装","家庭装","大桶","浓缩","天然","植萃","椰油","甘油","维生素E","玻尿酸"].forEach(function(w){
+    if(name.indexOf(w)>-1) auto.push(w);
+  });
+  state.autoSell=uniq(auto);
+  if(g){
+    $("cat2").value=g[0]; loadSub(); $("cat3").value=g[1]; renderChips(); showSeason();
+    $("guessInfo").innerHTML='<span class="tag g">识别为：'+CAT[g[0]].name+' / '+CAT[g[0]].sub[g[1]].n+'</span>'+
+      (state.autoSell.length?'　自动并入卖点池：<span class="tag">'+state.autoSell.join("</span> <span class=\"tag\">")+'</span>':'　<span class="tag a">未抽到卖点词</span>');
+    // 品牌首字母猜测：取商品名前2-4字作为品牌
+    if(!$("brand").value.trim()){
+      var b=name.replace(/[\s|｜].*$/,"");
+      var known=["蓝月亮","威露士","滴露","舒肤佳","立白","雕牌","汰渍","奥妙","超能","白猫","妈妈壹选","六神","多芬","力士","潘婷","飘柔","沙宣","清扬","海飞丝","云南白药","两面针","冷酸灵","黑人","高露洁","佳洁士","心相印","维达","清风","洁柔","得宝","植护","五月花","斑布","好家风"];
+      for(var i=0;i<known.length;i++){ if(name.indexOf(known[i])>-1){ $("brand").value=known[i]; break; } }
+    }
+  }else{
+    if(!silent) $("guessInfo").innerHTML='<span class="tag a">没认出来，请手动选类目</span>'+(state.autoSell.length?'　已并入卖点池：<span class="tag">'+state.autoSell.join("</span> <span class=\"tag\">")+'</span>':'');
+    renderChips();
+  }
+  return g;
+}
+
+function doParse(){
+  var t=$("research").value.trim();
+  if(!t){ $("resInfo").innerHTML='<span class="tag a">请先粘贴查到的内容</span>'; return; }
+  var r=rebucketRes(parseResearch(t));
+  state.res=r;
+  // 长尾热搜词并入热搜池（优先于内置词根参与标题）
+  if(r.hot.length){
+    state.hot=(state.hot||[]).concat(r.hot.map(function(w){return {k:w,src:"研究"};}));
+    var seen={}; state.hot=state.hot.filter(function(x){ if(seen[x.k]) return false; seen[x.k]=1; return true; });
+  }
+  // 规格回填到「全店统一规格」
+  if(r.spec.length && !$("specAll").value.trim()) $("specAll").value=r.spec[0];
+  state.vals.sell=[];state.vals.crowd=[];state.vals.scene=[];
+  // 研究词 + 商品名自带词 优先选中
+  state.vals.sell=uniq((state.autoSell||[]).concat(r.sell)).slice(0,4);
+  state.vals.crowd=r.crowd.slice(0,2);
+  state.vals.scene=r.scene.slice(0,2);
+  renderChips();
+  var n=r.sell.length+r.crowd.length+r.scene.length+r.spec.length+r.hot.length;
+  if(n===0){
+    $("resInfo").innerHTML='<div class="resbox" style="border-color:#C0392B"><b>一个词都没抽到。</b><br>'+
+      '支持两种写法：① 每行一段，行首写标签 —— <span class="mono">功能点：xxx yyy</span>（词之间用空格或顿号隔开）；'+
+      '② 直接粘一堆词，用空格/逗号/换行任意分隔，会按词典归类。<br>'+
+      '<span style="opacity:.8">不支持整段长句连写（那会被当成一个词丢掉）。</span></div>';
+    return;
+  }
+  var parts=[];
+  parts.push('已回填 · 卖点 <b>'+r.sell.length+'</b> / 人群 <b>'+r.crowd.length+'</b> / 场景 <b>'+r.scene.length+'</b> / 规格 <b>'+r.spec.length+'</b> / 热搜 <b>'+r.hot.length+'</b>');
+  var picked=state.vals.sell.concat(state.vals.crowd,state.vals.scene);
+  parts.push('已自动选中：'+(picked.length?picked.map(function(w){return '<span class="tag">'+esc(w)+'</span>';}).join(" "):'<span class="tag a">无</span>'));
+  if(r.excl.length) parts.push('<span style="color:#A32D2D">已按排除清单剔除：<b>'+esc(r.excl.join("、"))+'</b></span>');
+  var longW=r.sell.filter(function(w){return w.length>=5;});
+  if(longW.length) parts.push('<span style="color:#A15C00">⚠ '+longW.length+' 个长文案词（'+esc(longW.slice(0,3).join("、"))+(longW.length>3?'…':'')+'）是官网描述语不是搜索词，60 字符很宝贵，建议最多留 1 个。</span>');
+  if(r.spec.length) parts.push('<span style="opacity:.8">规格：'+esc(r.spec.join(" / "))+'</span>');
+  if(r.hot.length) parts.push('<span style="opacity:.8">长尾热搜：'+esc(r.hot.slice(0,6).join(" · "))+(r.hot.length>6?" …":"")+'</span>');
+  parts.push('<span style="opacity:.8">去左侧增删后再生成。</span>');
+  $("resInfo").innerHTML='<div class="resbox">'+parts.join("<br>")+'</div>';
+}
+
+
+function cur(){ return CAT[$("cat2").value].sub[$("cat3").value]; }
+
+/* ============ 商品名 → 品类识别 ============ */
+var GUESS=[
+ ["洗手液|洗手|泡沫洗手|免洗洗手",["A2","handwash"]],
+ ["沐浴露|沐浴乳|沐浴液|沐浴",["A2","shower"]],
+ ["香皂|手工皂|洁面皂|皂",["A2","soap"]],
+ ["护手霜|润手霜|手部护理",["A2","handcream"]],
+ ["身体乳|润肤乳|身体护理",["A2","bodylotion"]],
+ ["止汗|走珠|香体",["A2","deo"]],
+ ["脱毛|剃毛",["A2","depil"]],
+ ["足膜|手膜|手足膜",["A2","footmask"]],
+ ["洗衣凝珠|凝珠",["D","beads"]],
+ ["洗衣液|衣物清洁液",["D","liquid"]],
+ ["洗衣粉",["D","powder"]],
+ ["洗衣皂|肥皂",["D","laundrysoap"]],
+ ["柔顺剂|护理剂",["D","softener"]],
+ ["衣领净|领口清洁",["D","collar"]],
+ ["彩漂|漂白水|漂白",["D","bleach"]],
+ ["留香珠|香氛珠",["D","scentbeads"]],
+ ["衣物消毒|衣物除菌",["D","disliquid"]],
+ ["干洗剂|免水洗清洁",["D","dryclean"]],
+ ["洗洁精|餐具清洁",["E1","dish"]],
+ ["油污净|厨房油污|重油",["E1","degreaser"]],
+ ["洁厕|马桶清洁|洁厕灵",["E1","toilet"]],
+ ["地板清洁|木地板",["E1","floor"]],
+ ["玻璃清洁|玻璃水|镜子清洁",["E1","glass"]],
+ ["管道疏通|下水道|管道通",["E1","drain"]],
+ ["除霉|墙体除霉",["E1","mold"]],
+ ["空调清洁|空调清洗",["E1","ac"]],
+ ["多功能清洁|万能清洁|家居清洁喷雾",["E1","multi"]]
+];
+function guessCat(name){
+  for(var i=0;i<GUESS.length;i++){
+    var ks=GUESS[i][0].split("|");
+    for(var j=0;j<ks.length;j++){ if(name.indexOf(ks[j])>-1) return GUESS[i][1]; }
+  }
+  return null;
+}
+
+/* ============ 联网研究：生成指令 / 解析回填 ============ */
+function buildPrompt(){
+  var name=$("pname").value.trim()||"本品";
+  var c=cur();
+  var mo=$("month").value;
+  var mf=MONTH[mo];
+  return "你是淘宝个护家清类目的资深运营。我要给一款商品配标题，请先帮我做「商品事实核查」，"
+  +"只输出你能查到的真实信息，查不到就写「未查到」，不要编造。\n\n"
+  +"【商品】"+name+"（品牌："+($("brand").value.trim()||"待填")+"；类目："+c.n+"；主打月份："+mo+"月）\n\n"
+  +"请依次回答：\n"
+  +"1. 功能点：这个品（含同品牌同款/竞品同款）官方与在售商品页上实际写了哪些功效？请把原文用词列出来（尤其注意有没有「抑菌/除菌/杀菌/抗菌/99.9%」这类词，以及它们是否标注了检测报告或消字号）。\n"
+  +"2. 规格与香型：真实在售的容量、组合装形式（单瓶/双瓶/补充装/泡沫型/免洗型）、香型有哪些。\n"
+  +"3. 目标人群：官方与评价里指向的人群（儿童/母婴/敏感肌/全家/男士/学生…）。\n"
+  +"4. 使用场景：真实提到的使用场景（厨房/卫生间/办公室/便携/车载/宿舍…）。\n"
+  +"5. 竞品标题：淘宝搜索该品时，销量前 10 的商品标题原文各是什么？把它们用词的高频片段列出来。\n"
+  +"6. 热搜词：该类目下最近 30 天搜索人气高、且在线商品数相对少的词（长尾优先），尽量给 15~20 个。\n"
+  +"7. 平台主题："+mo+"月平台主推的营销主题与该品类当下的利益点（参考时段背景："+mf.note+"）。\n\n"
+  +"输出要求（格式很重要，我会直接解析你贴回来的内容）：\n"
+  +"① 每段各占一行，行首写「标签：」，词与词之间只用空格隔开 —— 不要写成长句、不要用顿号分句；\n"
+  +"② 词要原样保留，不要替我做合规化处理；\n"
+  +"③ 最后另起一行，用「祛除（本品不可用）：xxx xxx」列出这个品真不能用的词，我会自动剔除；\n"
+  +"④ 再单独注明「哪些词需要资质」。\n\n"
+  +"格式示例：\n"
+  +"功能点：去污渍 去血渍 留香 温和\n"
+  +"规格：500g瓶 1kg瓶 袋装补充装\n"
+  +"人群：学生 学生党\n"
+  +"场景：手洗 内衣裤 宿舍\n"
+  +"热搜词：手洗洗衣液学生宿舍 · 洗衣液去血渍\n"
+  +"祛除（本品不可用）：除菌 抑菌 除螨";
+}
+/* 卖点词典：从任意文本里「按词典匹配」抽词，而不是把整句当词 */
+var SELLDIC=["抑菌","除菌","杀菌","抗菌","99.9%","99%","除螨","泡沫","丰富泡沫","细腻","氨基酸","芦荟","野菊花","柠檬","薰衣草","茶籽","橙花","茉莉","清爽","滋润","保湿","补水","温和","不干手","不紧绷","不残留","无残留","易冲洗","留香","持久留香","淡香","清香","无香","免洗","便携","按压","按压式","补充装","替换装","食品级","去油","强力","深层","持久","护色","柔顺","防串色","浓缩","天然","植萃","椰油","甘油","维生素E","玻尿酸","修护","呵护","洁净","清洁","去渍","亮白","增白","除味","除霉","疏通","防雾","光亮","养护","大桶","家庭装","囤货","实惠","经济","旅行装","小包装","独立包装","可降解","无磷","中性配方"];
+/* 人群 / 场景词典 */
+var CROWDDIC=["儿童","母婴","婴儿","宝宝","成人","男士","女士","学生","老人","全家","孕妇","敏感肌","油皮","干皮","学生党","上班族","全家适用","婴幼儿"];
+var SCENEDIC=["家用","家庭","厨房","卫生间","浴室","办公室","便携","车载","宿舍","户外","旅行","出差","送礼","公共","餐厅","客厅","卧室","阳台","油烟机","马桶","玻璃","地板","瓷砖","木地板","衣柜","冰箱","洗衣机","空调","下水道","宠物","车内","书包","办公桌"];
+
+/* ============ 属性互斥表：SKU 标题「不得自相矛盾」============
+   规则：同一条 SKU 标题里，A 组任一词 与 B 组任一词 同时出现 = 矛盾。
+   典型坑：「1kg*2瓶」被塞了「袋装」、「500g单瓶」被塞了「整箱」——
+   这种链接上架就是要素不一致，平台可判商品信息不实。 */
+var XPAIRS=[
+ [["单瓶","单支","单块","单盒","1瓶装","单包装"],["双瓶","两瓶","三瓶","2瓶","3瓶","4瓶","5瓶","6瓶","多瓶","整箱","礼盒装","套装","组合装","囤货装","家庭装"],"单只装 与 多只装"],
+ [["袋装","袋补充装"],["瓶","瓶装","桶装","盒装","大瓶装","大桶装"],"袋装 与 瓶/桶装"],
+ [["补充装","替换装"],["单瓶","礼盒装","套装","整箱","家庭装","囤货装","便携装","旅行装"],"补充装 与 整装/旅行装"],
+ [["旅行装","便携装","旅行套装","小瓶","随身装"],["大桶装","大瓶装","家庭装","囤货装","整箱","大容量"],"便携装 与 大容量装"],
+ [["儿童","婴儿","宝宝","母婴","幼儿","新生儿"],["成人","男士","女士","老人"],"儿童人群 与 成人人群"],
+ [["男士","男用"],["女士","女用","女性"],"男士 与 女士"],
+ [["无香","无香型","无味","无香精"],["留香","持久留香","香氛","薰衣草","茉莉","玫瑰","花香","清香","香型"],"无香 与 香型/留香"],
+ [["免洗","免水洗","干洗"],["水洗","冲洗","过水","泡沫","泡泡"],"免洗 与 需水洗"],
+ [["宠物","猫","狗"],["婴儿","宝宝","母婴","食品级","母婴级"],"宠物用 与 母婴/食品级"],
+ [["一次性","免洗"],["可重复使用","水洗","替换装"],"一次性 与 可重复使用"]
+];
+/* 在词数组里找互斥对，返回 [{a,b,why}]
+   ⚠️ 必须用「命中的子串」比较，不能用整个词元 ——
+   SKU 标题是无空格拼接的（蓝月亮洗手液儿童成人500g补充装），
+   整个串是一个词元，若拿词元比 a===b 会永远判不冲突。 */
+function findConflict(words){
+  var out=[];
+  for(var i=0;i<XPAIRS.length;i++){
+    var A=XPAIRS[i][0],B=XPAIRS[i][1],why=XPAIRS[i][2];
+    var a=null,b=null;
+    words.forEach(function(w){
+      A.forEach(function(x){ if(!a && w.indexOf(x)>-1) a=x; });
+      B.forEach(function(x){ if(!b && w.indexOf(x)>-1) b=x; });
+    });
+    if(a&&b&&a!==b) out.push({a:a,b:b,why:why});
+  }
+  return out;
+}
+/* 一条 SKU 标题里出现的容量数字，必须能在该 SKU 原文里找到 —— 否则是凭空写规格 */
+function findGhostSpec(title,raw){
+  /* 只查「容量」，不查「件数」——
+     「500g*2瓶」里的 2 是由「芦荟500g+野菊花500g」两段合计出来的，有依据不算凭空 */
+  var RE=/\d+(?:\.\d+)?\s*(?:ml|ML|L|l|g|G|kg|KG|斤|米|cm)/g;
+  var ts=(title.match(RE)||[]);
+  var rs=(raw.match(RE)||[]);
+  if(!rs.length) return [];
+  return ts.filter(function(t){ return rs.indexOf(t)<0 && rs.indexOf(t.replace(/\s/g,""))<0; });
+}
+/* 香型词 = 规格维度不是意图维度，且 SKU 名里通常自带，不占 SKU 意图位 */
+var FRAGDIC=["薰衣草","茉莉","玫瑰","柠檬","橙花","兰花香","白兰","风清","樱花香","桂花香","茶香","海洋","清新型","薄荷","芦荟香","柑橘","檀香","麝香","香型","无香型","原味","清香型","淡香型"];
+/* 包装形态词 = 同样是规格维度。★ 必须挡在意图池外：
+   否则「旅行装100g」的「旅行装」会被 dictScan 抽进全局池头部，
+   主推 SKU 优先挑词时就会挑走别人家的专属词（实测：500g单瓶 → 旅行装）。
+   注意：第0轮 SPEC2INTENT 的映射结果（旅行装→便携、补充装→补充装）是 push 进去的，不受此限 */
+var SPECFORM=["单瓶","双瓶","两瓶","三瓶","四瓶","五瓶","单支","双支","单块","单盒","单袋","袋装","盒装","瓶装","桶装","罐装","管装","片装","包装","卷装","抽装","组合装","实惠装","经济装","量贩装","整箱","箱装","散装","旅行装","便携装","随身装","家庭装","囤货装","大桶装","大瓶装","小瓶装","迷你装","中样","小样","正装","礼盒装","盒装","套装","组套","喷雾装","凝胶装","颗粒装","挂壁球","补充装","替换装"," refill","多瓶装","超值装","促销装","体验装","试用装"];
+var STOPRE=/^(功能点|规格|人群|场景|竞品|热搜|平台|输出要求|请依次回答|你是|【|注意|以上是|总结|以下|参考|说明|建议|目标|真实|官方|评价|销量|搜索|原文|高频|检测|报告|资质|需要|不要|未查到|如|其中|包括|以及|通过|可以|能够|适合|用于|具有|含有|这款|该品|本品|商品|产品|标题|价格|优惠|活动|促销|旗舰店|官网|正品|包邮|发货|库存|颜色|分类|型号|产地|保质|成分|主要|适用|对象|净含量|质地|形态|是否)/;
+
+/* ---- 段落标签 → 默认归属桶（excl=排除清单，不收词且要从结果里剔除） ---- */
+var SECMAP=[
+  [/^(功能点|功效|功能|卖点|核心卖点|产品特点|特点)/,"sell"],
+  [/^(规格|容量|规格与香型|规格香型|包装规格|规格与包装|规格形态)/,"spec"],
+  [/^(香型|香味|气味|香氛|味道|成分|成分香型|香型成分|配方|配方成分|主要成分|有效成分)/,"frag"],
+  [/^(人群|目标人群|适用人群|使用人群)/,"crowd"],
+  [/^(场景|使用场景|适用场合|场景与用途|用途|场合)/,"scene"],
+  [/^(竞品|竞品标题|竞品用词|竞品高频)/,"sell"],
+  [/^(热搜|热搜词|搜索词|蓝海词|长尾词|关键词)/,"hot"],
+  [/^(平台主题|平台|营销主题|时段|利益点|主题)/,"sell"],
+  [/^(祛除|禁用|剔除|排除|不可用|不能用|不要使用|规避|雷点|违禁|敏感|需资质|需要资质|资质)/,"excl"]
+];
+/* 行内分隔符：空格（含全角）/ 顿号 / 逗号 / 分号 / 中点 / 竖线 / 斜杠 / 加号 */
+var SPLITRE=/[\s\u3000、,，;；·・|｜\/／+＋]+/;
+/* 词元级停用词：句式碎片，不是搜索词 */
+var BADTOK=/^(未查到|暂无|没有|不确定|待确认|未找到|未核实|同上|见上|略|其他|其它|等等|以及|并且|还是|不过|但是|因此|所以|如果|虽然|这个|那个|我们|他们|可以|不能|不会|应该|已经|正在|非常|比较|一点|一些|很多|多种|各类|各种|该品|本品|商品|产品|官网|旗舰店|正品|包邮|发货|库存|价格|优惠|活动|促销|评价|销量|搜索|报告|检测|资质|说明|注意|提示|建议|总结|以下|以上是|原文|高频|例如|比如)/;
+/* 词典按长度降序，保证「持久留香」先于「留香」命中 */
+var SELLDIC_S=SELLDIC.slice().sort(function(a,b){return b.length-a.length;});
+var CROWDDIC_S=CROWDDIC.slice().sort(function(a,b){return b.length-a.length;});
+var SCENEDIC_S=SCENEDIC.slice().sort(function(a,b){return b.length-a.length;});
+/* 包装/规格形态词：既是规格也是卖点，从规格行里单独抽（避免掉出「实惠」这种碎片） */
+var PACKDIC=["补充装","替换装","家庭装","囤货装","大桶装","大瓶装","旅行装","便携装","礼盒装","实惠装","组合装","套装","喷雾装","袋装","瓶装","盒装","整箱","按压泵头","按压式","独立包装","小包装"];
+/* 词元清洗：去括号内容 / 行首编号 / 项目符号 / 首尾标点
+   ⚠️ 编号清理要求后面必须跟分隔符（. 、 ) ］），否则「500g瓶」的 500 会被当成行号删掉 */
+function cleanTok(t){
+  return t.replace(/[（(][^）)]*[）)]/g,"")
+          .replace(/^\d+[\.、\)］]$/,"")
+          .replace(/^[-*•‣>》]\s*/,"")
+          .replace(/^[：:－—\-]+/,"").replace(/[：:－—\-]+$/,"")
+          .trim();
+}
+/* 词元质量闸门：必须含中文，纯数字/纯符号/超长句一律不要
+   ⚠️ 不要用 /^[\d\W_]+$/ 判「纯符号」——中文也属于 \W，会把所有中文词全拒掉 */
+function tokOK(t){
+  if(!t) return false;
+  if(t.length<2||t.length>12) return false;
+  if(BADTOK.test(t)) return false;
+  if(!/[\u4e00-\u9fa5]/.test(t)) return false;
+  return true;
+}
+function dictHit(seg,dic){
+  var hit=[];
+  dic.forEach(function(k){ if(seg.indexOf(k)>-1) hit.push(k); });
+  return hit;
+}
+
+/* 结构化解析：先按行认标签，再把冒号后的正文切成词元，逐词元分类 */
+function parseResearch(txt){
+  var out={sell:[],crowd:[],scene:[],spec:[],excl:[],hot:[],frag:[]};
+  var pendingBucket=null; // 上行是「标签：」独占行时，下几行继承它的归属
+  txt.split(/\r?\n/).forEach(function(line){
+    var L=line.trim().replace(/^\d+[\.、\)］]\s*/,"").replace(/^[-*•‣>》]\s*/,"").trim();
+    if(!L) return;
+    // 认段落标签
+    var bucket=null;
+    for(var i=0;i<SECMAP.length;i++){ if(SECMAP[i][0].test(L)){ bucket=SECMAP[i][1]; break; } }
+    var tagged=(bucket!==null), wasTagged=tagged;
+    // 取冒号/破折号之后为正文；无冒号则整行（标签行本身不收）
+    var body=L, m=L.match(/^[^：:]{1,12}[：:]\s*([\s\S]*)$/);
+    if(m) body=m[1];
+    else if(tagged) body=L.replace(/^[^：:]{1,12}[：:]?\s*/,"");
+    // 「功能点：」独占一行、词写在下面几行 → 后续行继承该标签（继承行本身不再改 pending）
+    if(!tagged&&pendingBucket){ bucket=pendingBucket; tagged=true; body=L; }
+    if(!tagged) bucket="sell";
+    if(wasTagged) pendingBucket=(m&&!/\S/.test(m[1]))?bucket:null;
+    // 无标签时收紧长度（≤4字），避免把「随便粘一堆词」这类句子碎片收进来
+    var maxLen=tagged?6:4;
+    body.split(SPLITRE).forEach(function(t){
+      var w=cleanTok(t);
+      // 排除清单豁免中文与长度闸门（「99.9%」这类纯符号也要能收）
+      if(bucket==="excl"){ if(w&&w.length<=12) out.excl.push(w); return; }
+      if(!tokOK(w)) return;
+      /* 成分 / 香型 = SKU 级属性：整条链接里只有部分规格才有（芦荟款、野菊花款）。
+         既收进 sell（商品标题可以用），也单独记 frag —— SKU 分配时只能给「原文自带」的那条，
+         不能借给别的规格，否则野菊花款标题里出现「芦荟」= 属性不实。 */
+      if(bucket==="frag"){ out.frag.push(w); out.sell.push(w); return; }
+      if(bucket==="spec"){
+        out.spec.push(w);
+        PACKDIC.forEach(function(p){ if(w.indexOf(p)>-1) out.sell.push(p); });
+        return;
+      }
+      if(bucket==="hot"){
+        out.hot.push(w);
+        // 长尾词里也捞功效/人群/场景，供词池分流
+        out.sell=out.sell.concat(dictHit(w,SELLDIC_S));
+        out.crowd=out.crowd.concat(dictHit(w,CROWDDIC_S));
+        out.scene=out.scene.concat(dictHit(w,SCENEDIC_S));
+        return;
+      }
+      var hs=dictHit(w,SELLDIC_S), hc=dictHit(w,CROWDDIC_S), hn=dictHit(w,SCENEDIC_S);
+      var isCN=new RegExp("^[\\u4e00-\\u9fa5]{2,"+maxLen+"}$").test(w);
+      // 人群 / 场景词典优先于标签桶 —— 无标签粘贴时也能正确归类
+      if(hc.length&&!hn.length){ out.crowd.push(isCN?w:hc[0]); return; }
+      if(hn.length&&!hc.length){ out.scene.push(isCN?w:hn[0]); return; }
+      if(hc.length&&hn.length){
+        if(bucket==="scene") out.scene.push(isCN?w:hn[0]);
+        else out.crowd.push(isCN?w:hc[0]);
+        return;
+      }
+      if(hs.length){ out.sell.push(isCN?w:hs[0]); return; }
+      if(isCN) out[bucket].push(w);
+      else if(/^[\d.]+\s*(ml|ML|g|G|kg|KG|L|l|片|袋|瓶|支|盒|包|抽|卷|块|斤)/.test(w)) out.spec.push(w);
+    });
+  });
+  // 排除清单：从所有桶里剔除（子串双向匹配，如 excl「除菌」→ 剔除「除菌除螨」）
+  out.excl=uniq(out.excl);
+  if(out.excl.length){
+    ["sell","crowd","scene","hot"].forEach(function(k){
+      out[k]=out[k].filter(function(w){
+        for(var i=0;i<out.excl.length;i++){
+          var e=out.excl[i];
+          if(w===e||w.indexOf(e)>-1||e.indexOf(w)>-1) return false;
+        }
+        return true;
+      });
+    });
+  }
+  out.sell=uniq(out.sell).slice(0,24);
+  out.crowd=uniq(out.crowd).slice(0,10);
+  out.scene=uniq(out.scene).slice(0,10);
+  out.spec=uniq(out.spec).slice(0,8);
+  out.hot=uniq(out.hot).slice(0,20);
+  return out;
+}
+/* 从一个 SKU 规格原文里直接扫词典（比研究文本更准，优先级最高） */
+function dictScan(raw){
+  var r=[];
+  SELLDIC.forEach(function(k){ if(raw.indexOf(k)>-1) r.push(k); });
+  // 按在原文中出现的位置排，先出现的更贴近这个 SKU（如「免洗抑菌无香」先取「免洗」）
+  return uniq(r).filter(function(w){ return !isBlockedWord(w); })
+                .sort(function(a,b){ return raw.indexOf(a)-raw.indexOf(b); });
+}
+
+function loadSub(){
+  var c3=$("cat3"); c3.innerHTML="";
+  var g=CAT[$("cat2").value].sub;
+  Object.keys(g).forEach(function(k){var o=document.createElement("option");o.value=k;o.textContent=g[k].n;c3.appendChild(o);});
+  // 默认洗手液
+  Object.keys(g).forEach(function(k){ if(g[k].n=="洗手液") c3.value=k; });
+  c3.onchange=renderChips;
+  renderChips(); showSeason(); loadHero();
+}
+
+function showSeason(){
+  var mf=MONTH[$("month").value];
+  var c=cur();
+  $("seasonBox").innerHTML="<b>"+$("month").value+"月时段因子：</b>"+esc(mf.note)+
+   "<br><b>推荐挂载词：</b>"+mf.tag.map(function(t){return '<span class="tag">'+esc(t)+'</span>';}).join(" ")+
+   "<br><b>本品类淡旺：</b>"+esc((c.sea.up||[]).join("；"))+"　|　淡："+esc((c.sea.down||[]).join("；"));
+  $("banBox").innerHTML="<b>本品类功效宣称（需资质，不禁用）：</b><br>"+(c.ban||[]).map(function(b){return '<span class="tag a">'+esc(b)+'</span>';}).join(" ")+
+   "<br><span style='color:var(--tx3)'>有消字号/检测报告即可使用，是该类目搜索量最大的词，默认保留不替换。</span>";
+}
+
+/* 词池：热搜词优先 */
+/* ★ 词池硬上限：超过 20 个的一律舍弃——不展示、也不进 SKU 补位池。
+   理由：一个链接 6~10 个 SKU、意图位就那么多；排到 20 名以后的几乎都是品类
+   内置通用词，没有真实搜索量支撑，写进标题带不来搜索，反而稀释标题权重。 */
+/* 热搜词是完整搜索短语（「抑菌洗手液芦荟」），整条塞进词池会重复核心词 → 先削核心词抽属性词 */
+function hotAttr(){
+  var cc=cur(); var core=(cc&&cc.core&&cc.core[0])||"";
+  var out=[];
+  (state.hot||[]).slice(0,8).forEach(function(r){
+    var h=r.k; if(!h) return;
+    if(core && h.indexOf(core)>-1){
+      var rest=h.split(core).join(" ");
+      dictScan(rest).forEach(function(w){ out.push(w); });
+      rest.split(/[\s\u00b7\u3001,,\uff0c]+/).forEach(function(x){
+        if(/^[\u4e00-\u9fa5]{2,6}$/.test(x) && x.indexOf(core)<0) out.push(x);
+      });
+    }else{
+      var dd=dictScan(h);
+      if(dd.length) out=out.concat(dd);
+      else if(/^[\u4e00-\u9fa5]{2,6}$/.test(h)) out.push(h);
+    }
+  });
+  return uniq(out);
+}
+function poolFor(kind){
+  var c=cur();
+  var items=[];
+  function push(w,s){
+    if(!w) return;
+    for(var i=0;i<items.length;i++) if(items[i].w===w) return;  // uniq，先到先得
+    items.push({w:w,s:s,r:items.length});
+  }
+  // ① 热搜词（真实搜索量，蓝海值降序）② 商品名自带 ③ 研究回填 ④ 品类内置通用词
+  // ★ 按归类分发：热搜削词属性 / 商品名自带词，classify 到哪个池就进哪个池
+  //   （未命中词典的默认归卖点池 —— 功能词居多）
+  hotAttr().forEach(function(w){ if((classifyWord(w)||"sell")===kind) push(w,"hot"); });
+  (state.autoSell||[]).forEach(function(w){ if((classifyWord(w)||"sell")===kind) push(w,"auto"); });
+  if(state.res) (state.res[kind]||[]).forEach(function(w){ push(w,"res"); });
+  // base = 内置品类词典三类全量，同样按 classify 归桶（内置词典自己也会写错位，如场景词典里的「床单被套」）
+  [["sell",c.sell],["crowd",c.crowd],["scene",c.scene]].forEach(function(p){
+    p[1].forEach(function(w){ if((classifyWord(w)||p[0])===kind) push(w,"dict"); });
+  });
+  var rawN=items.length;
+  items.sort(function(a,b){ return (SRCW[b.s]-SRCW[a.s]) || (a.r-b.r); });
+  /* ★ 入选名单固化：只有「词源变了」才重算（换品类 / 重解析研究 / 导入热搜 / 商品名抽词变化）。
+     删词不改词源 → 名单不动 → 删 1 个就真少 1 个，第 21 名不会挤上来。
+     （不固化的话：全量 34 > 上限 20，删掉前 20 里任意一个，第 21 位必然补位 = 越删越多） */
+  var cc2=cur();
+  var sig=[kind, (cc2&&(cc2.name||cc2.k||""))||"",
+           ((state.res&&state.res[kind])||[]).join(","),
+           (state.hot||[]).map(function(r){return r.k;}).join(","),
+           (state.autoSell||[]).join(","), POOL_CAP].join("|");
+  state.poolSig=state.poolSig||{}; state.poolKeep=state.poolKeep||{};
+  var keep;
+  if(state.poolSig[kind]===sig && state.poolKeep[kind]) keep=state.poolKeep[kind];
+  else{
+    keep=items.slice(0,POOL_CAP);
+    state.poolSig[kind]=sig; state.poolKeep[kind]=keep;
+    state.poolRaw=state.poolRaw||{}; state.poolRaw[kind]=rawN;   // 与名单同期固化，数字不漂移
+  }
+  var out=keep.map(function(x){ return x.w; });
+  state.poolCut=state.poolCut||{}; state.poolCut[kind]=Math.max(0,rawN-keep.length);
+  state.poolSrc=state.poolSrc||{}; state.poolSrc[kind]=keep;
+  return out.filter(function(w){ return !isBlockedWord(w); });
+}
+
+function renderChips(){
+  ["sell","crowd","scene"].forEach(function(kind){
+    var box=$("c"+(kind=="sell"?"Sell":kind=="crowd"?"Crowd":"Scene"));
+    var cnt=$("sellCnt");
+    if(kind=="crowd") cnt=$("crowdCnt");
+    if(kind=="scene") cnt=$("sceneCnt");
+    box.innerHTML="";
+    // 已勾选的词若被截断舍弃，同步移出已选（池子是唯一词源，避免「看不见的已选」）
+    var _pl=poolFor(kind);
+    if((state.vals[kind]||[]).length){
+      var _v=state.vals[kind].filter(function(w){ return _pl.indexOf(w)>-1; });
+      if(_v.length!==state.vals[kind].length) state.vals[kind]=_v;
+    }
+    var srcMap={}; ((state.poolSrc&&state.poolSrc[kind])||[]).forEach(function(x){ srcMap[x.w]=x.s; });
+    poolFor(kind).forEach(function(w){
+      var on=state.vals[kind].indexOf(w)>-1;
+      var b=document.createElement("span");
+      b.className="chip"+(on?" on":" maybe");
+      b.innerHTML='<span>'+esc(w)+'</span>'+
+        '<span class="cx" title="删除「'+esc(w)+'」：商品标题、SKU 主推与备选都不再用它">\u00d7</span>';
+      b.title=(on?"已选 · ":"备选 · ")+(on?"按顺序写进商品标题":"只补位到 SKU 搜索标题")+
+        "　｜来源："+(SRCLB[srcMap[w]]||"—");
+      b.onclick=function(){
+        var i=state.vals[kind].indexOf(w);
+        if(i>-1) state.vals[kind].splice(i,1);
+        else if(state.vals[kind].length>=MAXSEL[kind]) return;
+        else state.vals[kind].push(w);
+        renderChips();
+      };
+      var x=b.querySelector?b.querySelector(".cx"):null;
+      if(x) x.onclick=function(ev){ if(ev&&ev.stopPropagation)ev.stopPropagation(); blockWord(kind,w); };
+      box.appendChild(b);
+    });
+    /* 已删除的词：默认折叠成一个小入口，展开才能逐条恢复 —— 否则删越多、这一行越长 */
+    var bl=state.blocked[kind]||[];
+    if(bl.length){
+      var d=document.createElement("span");
+      d.className="chip delhd";
+      d.textContent="\uD83D\uDDD1 已删 "+bl.length+" 个 · "+(state.blockedShow?"收起":"展开恢复");
+      d.title="已删除的词（全局禁用）· 点开可逐条恢复";
+      d.onclick=function(){ state.blockedShow=!state.blockedShow; renderChips(); };
+      box.appendChild(d);
+      if(state.blockedShow){
+        bl.forEach(function(w){
+          var b=document.createElement("span");
+          b.className="chip del";
+          b.innerHTML='<span class="delw">'+esc(w)+'</span><span class="cx">\u21ba</span>';
+          b.title="已删除（全局禁用）· 点 \u21ba 恢复";
+          b.onclick=function(){ unblockWord(kind,w); };
+          box.appendChild(b);
+        });
+        var r=document.createElement("span");
+        r.className="chip undel";
+        r.textContent="全部恢复（"+bl.length+"）";
+        r.onclick=function(){ unblockAll(kind); };
+        box.appendChild(r);
+      }
+    }
+    if(cnt){
+      var n=state.vals[kind].length, tot=poolFor(kind).length;
+      var rawN=(state.poolRaw&&state.poolRaw[kind])||tot;
+      var cut=(state.poolCut&&state.poolCut[kind])||0;
+      cnt.textContent="已选 "+n+"/"+MAXSEL[kind]+" · 备选 "+(tot-n)+" 条进SKU"+
+        (cut?(" · 池 "+rawN+" → 取前 "+POOL_CAP+"，舍弃 "+cut+" 个低价值词"):"");
+      cnt.title="排序：热搜词（有真实搜索量）> 商品名自带 > 研究回填词 > 品类内置通用词；"+
+        "超过 "+POOL_CAP+" 个的直接舍弃，不展示也不进 SKU 补位池";
+      cnt.className="tag"+(n?"":" a");
+    }
+  });
+  // 默认选前两个卖点
+  if(!state.vals.sell.length && poolFor("sell").length){ state.vals.sell=[poolFor("sell")[0],poolFor("sell")[1]]; renderChips(); }
+}
+
+function loadHero(){
+  var lines=$("skus").value.split("\n").map(function(s){return s.trim();}).filter(Boolean);
+  var h=$("hero"); var old=h.value; h.innerHTML="";
+  lines.forEach(function(l,i){
+    var o=document.createElement("option"); o.value=i; o.textContent=(i+1)+". "+l.split(/[|\s]+/)[0];
+    h.appendChild(o);
+  });
+  if(old&&old<h.options.length) h.value=old;
+}
+
+function readCsv(e){
+  var f=e.target.files[0]; if(!f) return;
+  var r=new FileReader();
+  r.onload=function(){
+    if(r.result.indexOf("\uFFFD")>-1){
+      var r2=new FileReader();
+      r2.onload=function(){ doCsv(r2.result); };
+      r2.readAsText(f,"GBK");
+      return;
+    }
+    doCsv(r.result);
+  };
+  r.readAsText(f,"utf-8");
+}
+function doCsv(rawTxt){
+    var txt=rawTxt.replace(/^\uFEFF/,"");
+    var rows=txt.split(/\r?\n/).filter(function(x){return x.trim();});
+    if(!rows.length) return;
+    var head=rows[0].split(",").map(function(s){return s.trim();});
+    var ki=head.findIndex(function(h){return /关键词|搜索词|词/.test(h);});
+    var pi=head.findIndex(function(h){return /人气|搜索指数|搜索量|展现/.test(h);});
+    var gi=head.findIndex(function(h){return /在线商品|商品数|竞争/.test(h);});
+    var bi=head.findIndex(function(h){return /蓝海/.test(h);});
+    if(ki<0) ki=0;
+    var arr=[];
+    rows.slice(1).forEach(function(r0){
+      var cols=r0.split(",").map(function(s){return s.trim();});
+      var k=cols[ki]; if(!k) return;
+      var p=parseFloat(cols[pi])||0, g=parseFloat(cols[gi])||0, b=parseFloat(cols[bi]);
+      var blue = !isNaN(b) ? b : (g>0 ? p/g : p);
+      arr.push({k:k,p:p,g:g,blue:blue});
+    });
+    arr.sort(function(a,b){return b.blue-a.blue;});
+    state.hot=arr.slice(0,20);
+    $("csvInfo").innerHTML='<span class="tag g">已导入 '+arr.length+' 词</span> 按蓝海值降序，已并入词池优先使用';
+    renderChips();
+}
+
+/* ============ SKU 解析 ============ */
+function parseSku(line){
+  var parts=line.split(/[|\t]+/);
+  var raw=parts[0].trim();
+  var price=parts[1]?parseFloat(parts[1]):null;
+  var cap=(raw.match(/\d+(?:\.\d+)?\s*(?:ml|ML|L|l|g|G|kg|KG|片|包|袋|瓶|支|盒|抽|卷|对|颗|块)/)||[""])[0].replace(/\s+/g,"");
+  var combo=(raw.match(/(补充装|替换装|旅行装|便携装|随身装|家庭装|囤货装|大桶装|大瓶装|小瓶装|迷你装|礼盒装|实惠装|经济装|量贩装|超值装|多瓶装|组合装|促销装|体验装|试用装|正装|中样|小样|套装|喷雾装|凝胶装|颗粒装|挂壁球|袋装|整箱|箱装|散装|盒装|瓶装|桶装|罐装|单瓶|单支|单块|单盒|单袋|双瓶|两瓶|三瓶|四瓶|五瓶|双支|\d+\s*(?:瓶|支|块|袋|盒|包|片|对|颗)装?)/)||[""])[0];
+  var spec=cap;
+  if(combo&&combo!==cap){ spec = cap + (/^\d/.test(combo)?"*":"") + combo; }
+  /* 组合式 SKU 名：「芦荟x2+野菊花x2」「芦荟x2+补充装x2」——没有容量、只有件数。
+     之前这种情况 spec 会被切成「芦荟2野菊花2」，规格位被成分词占满，品类词都塞不进去。
+     现在改成合计件数：段内取「xN」的 N，各段相加（3+3=6件）。 */
+  if(!cap){
+    var qty=0;
+    raw.split(/[+＋]/).forEach(function(sg){
+      var m=sg.match(/(\d+)\s*[xX*×＊]\s*(\d+)/);
+      if(m) qty+=parseInt(m[2],10);
+      else{ var m2=sg.match(/[xX*×＊]\s*(\d+)/); if(m2) qty+=parseInt(m2[1],10); }
+    });
+    if(qty>0){
+      var u=(raw.match(/(瓶|支|袋|盒|块|包|片)/)||[""])[0];
+      spec=qty+(u||"瓶");
+    }
+  }else if(raw.indexOf("+")>-1||raw.indexOf("＋")>-1){
+    /* 多段且每段容量相同（「芦荟500g+野菊花500g」= 2 瓶）→ 标件数；
+       有形态差异词（补充装/旅行装）的不改，避免把「1瓶+1补充装」写成「2瓶」 */
+    var sg2=raw.split(/[+＋]/);
+    var caps=sg2.map(function(x){ return (x.match(/\d+(?:\.\d+)?\s*(?:ml|ML|L|l|g|G|kg|KG)/)||[""])[0].replace(/\s+/g,""); });
+    if(sg2.length>1 && !combo && caps.every(function(x){ return x && x===caps[0]; })){
+      var u2=(raw.match(/(瓶|支|袋|盒|块|包|片)/)||[""])[0];
+      spec=caps[0]+"*"+(u2?sg2.length+u2:sg2.length+"瓶");
+    }
+  }
+  if(!spec) spec=raw;
+  /* 规格串不得吃掉整条 SKU 标题：>12字符压成「容量+主形态」。
+     否则「芦荟x2+野菊花x2」(27字符) 占满 30 字符，品类词和意图词一个都放不进。 */
+  var specWarn=false;
+  if(clen(spec)>12){
+    var s2=(cap||"")+(combo||"");
+    if(s2 && clen(s2)<=12) spec=s2;
+    else{
+      // 识别不出规格（如「芦荟x2+野菊花x2」）→ 去连接符再压到 12 字符，并标记待人工确认
+      var cleaned=raw.replace(/[+＋x×*＊]/g,"");
+      spec = clen(cleaned)<=12 ? cleaned : cut(cleaned,12);
+      specWarn=true;
+    }
+  }
+  return {raw:raw,price:price,spec:spec,tags:raw,warn:specWarn};
+}
+
+/* ============ 生成 ============ */
+var LAST=null;
+
+function run(){
+  var c=cur();
+  var brand=$("brand").value.trim();
+  var mf=MONTH[$("month").value];
+  var notBlocked=function(w){ return !isBlockedWord(w); };          // ★ 全局屏蔽闸门
+  var sell=state.vals.sell.filter(notBlocked),
+      crowd=state.vals.crowd.filter(notBlocked),
+      scene=state.vals.scene.filter(notBlocked);
+  var strictSrcEl=$("strictSrc");
+  var strict=!!(strictSrcEl && strictSrcEl.checked);
+  /* 没勾选时的兜底：严格模式下只能从「研究回填词池」取真实词，
+     绝不能兜到品类内置词 —— 那是凭空造词（氨基酸/不干手这类），属虚假宣传。
+     宽松模式才允许内置词兜底，并会在报告里标黄提示。 */
+  if(!sell.length)  sell  = strict ? ((state.res&&state.res.sell||[]).filter(notBlocked).slice(0,2))  : (c.sell||[]).filter(notBlocked).slice(0,2);
+  if(!scene.length) scene = strict ? ((state.res&&state.res.scene||[]).filter(notBlocked).slice(0,1)) : (c.scene||[]).filter(notBlocked).slice(0,1);
+  // 商品名里抽到的功效词（抑菌等）默认补进卖点，保证真实卖点不丢
+  (state.autoSell||[]).forEach(function(w){ if(!notBlocked(w)) return; if(sell.length<4 && sell.indexOf(w)<0) sell.push(w); });
+  var specAll=$("specAll").value.trim();
+  var core=c.core[0];
+  var season=mf.tag.slice(0,2);
+
+  /* ===== ★ 属性真实性：SKU 标题里的词必须「该商品真实具备」 =====
+     三档来源：
+     ① 该 SKU 规格名自带的词（最可信，如「500g*2瓶」「泡沫」）
+     ② 研究回填词池 + 你勾选的词 + 商品名自带词（整品级真实属性，任何 SKU 都能用）
+     ③ 内置品类词库（通用词，不属于这个品 → 严格模式禁用）
+     borrowed = 只在「别的 SKU 原文」里出现过的词，本 SKU 未必具备 → 严格模式同样禁用 */
+  var linesAll=$("skus").value.split("\n").map(function(s){return s.trim();}).filter(Boolean).map(parseSku);
+  strict=!!($("strictSrc") && $("strictSrc").checked);
+  var dictPool=[];
+  linesAll.forEach(function(s){ dictPool=dictPool.concat(dictScan(s.raw)); });
+  var resPool=state.res?uniq((state.res.sell||[]).concat(state.res.crowd||[]).concat(state.res.scene||[])).filter(notBlocked):[];
+  var hotPool=(state.hot||[]).map(function(r){return r.k;}).filter(notBlocked);
+  var knownPool=uniq(resPool.concat(hotPool).concat(sell).concat(crowd).concat(scene)
+                      .concat(dictPool).concat(state.autoSell||[])).filter(notBlocked);
+  function isBuiltin(w){ return knownPool.indexOf(w)<0; }
+  var fragList=state.res?(state.res.frag||[]):[];
+  var ownBase=uniq(resPool.concat(hotPool).concat(state.autoSell||[]));
+  function isBorrowed(w,raw){
+    if(isBuiltin(w)) return false;
+    /* 成分/香型是 SKU 级属性：只有该 SKU 自己写了才算具备，
+       不能因为「别的规格有芦荟」就给野菊花款也挂上芦荟 */
+    if(fragList.indexOf(w)>-1) return dictScan(raw).indexOf(w)<0;
+    if(ownBase.indexOf(w)>-1) return false;
+    if(sell.concat(crowd,scene).indexOf(w)>-1) return false;
+    if(dictScan(raw).indexOf(w)>-1) return false;
+    return true;   // 只在别的 SKU 原文里出现过 —— 本 SKU 未必具备
+  }
+
+  /* --- 备选池：词池里没勾选的词。不进商品标题的会补位给 SKU 标题 --- */
+  var reserve=[];
+  ["sell","crowd","scene"].forEach(function(k){
+    poolFor(k).forEach(function(w){ if(state.vals[k].indexOf(w)<0) reserve.push(w); });
+  });
+  reserve=uniq(reserve).filter(function(w){ return !FRAGDIC.some(function(f){ return w.indexOf(f)>-1; }); });
+  reserve=reserve.filter(notBlocked);
+  if(strict) reserve=reserve.filter(function(w){ return !isBuiltin(w); });   // 严格模式：不要内置词库造的词
+
+  /* --- 商品标题 3 候选：严格按 SOP 位置优先级分段，填满 60 字符不留空 --- */
+  var seg1=[brand,core];
+  var attr=uniq(sell.slice());
+  var cs=uniq(scene.concat(crowd));
+  var tail=uniq(season.slice());
+  var fill=uniq(reserve.concat((state.hot||[]).map(function(r){return r.k;})).concat(c.sell).concat(c.scene).concat(c.crowd)).filter(notBlocked);
+  /* 商品标题同样受真实性约束：内置品类词不能拿来填空位 */
+  if(strict) fill=fill.filter(function(w){ return !isBuiltin(w); });
+  var t1=buildTitle(seg1,attr,[specAll].concat(cs),tail,fill,60);
+  var t2=buildTitle(seg1,attr.slice(1).concat(attr.slice(0,1)),cs.concat([specAll]),tail,fill,60);
+  var t3=buildTitle(seg1,cs.concat(attr),[specAll],tail,fill,60);
+  var titles=uniq([t1,t2,t3]).map(function(t){return fixText(t);});
+
+  /* --- SKU 标题 --- */
+  var lines=$("skus").value.split("\n").map(function(s){return s.trim();}).filter(Boolean).map(parseSku);
+  var heroIdx=parseInt($("hero").value||"0",10);
+  // 意图池：已选词在前（优先占位），备选词紧随其后（补位），品类内置词兜底
+  var intentPool=uniq(sell.concat(crowd).concat(scene).concat(reserve));
+  var used={};
+  var allPool=uniq(intentPool.concat(reserve).concat(c.scene).concat(c.crowd).concat(c.sell));
+  var SPEC2INTENT={旅行装:"便携",便携装:"便携",旅行套装:"便携",家庭装:"家用",囤货装:"囤货",大桶装:"家用",大瓶装:"家用",礼盒装:"送礼",套装:"家庭",补充装:"补充装",替换装:"补充装",挂壁球:"马桶",喷雾装:"喷雾"};
+  // 把每个 SKU 原文里扫到的卖点词并入总池（如「50g免洗抑菌无香」→ 免洗/抑菌/无香）
+  var dictPool=[];
+  lines.forEach(function(s){ dictPool=dictPool.concat(dictScan(s.raw)); });
+  dictPool=dictPool.filter(notBlocked);
+  /* dictPool（各 SKU 原文扫出的词）必须排最后兜底，不能排前面 ——
+     否则「实惠装2kg」扫出的「实惠」会占住池头，主推 SKU 第3轮一挑就挑走别人家的词。
+     每个 SKU 自己的原文词由第1/1.5轮直接分配，不靠全局池。 */
+  /* 兜底词来源标记：研究词池(res) / 已选(vals) / SKU原文(dictPool) 之外的，都算「内置词」——
+     它们不是你查到的真实卖点，发布前必须确认商品确实具备，否则属虚假宣传。
+     knownPool / isBuiltin / isBorrowed / strict 已在 run() 开头统一定义，这里不再重复声明。 */
+  /* 严格模式：池子只留「整品级真实词」（已选 + 研究池 + 热搜词），
+     既不掺内置品类词，也不掺别的 SKU 专属词（本 SKU 自己的词由第 0/1/1.5 轮直接分配，不走全局池） */
+  allPool = strict ? uniq(intentPool.concat(reserve))
+                   : uniq(allPool.concat(c.scene).concat(c.crowd).concat(c.sell).concat(dictPool));
+  allPool=allPool
+    .filter(notBlocked)
+    .filter(function(w){ return clen(w)<=10; })
+    .filter(function(w){ return !SPECFORM.some(function(f){ return w.indexOf(f)>-1; }); })
+    .filter(function(w){ return w!==brand && w!==core; });  // 品牌词/品类词不当意图词，避免「蓝月亮」占意图位
+  var stubs=lines.map(function(s){ return {s:s,tag:null,tag2:null}; });
+  // 主推 SKU 优先挑词（它拿搜索页最好的位置，配最好的词）
+  var proc=stubs.map(function(o,i){return i;}).sort(function(a,b){
+    if(a===heroIdx) return -1; if(b===heroIdx) return 1; return a-b;
+  });
+  /* ★ 关键：挑词时就要排除「本 SKU 规格里已经有的词」。
+     以前是挑完再过滤，结果 used 被"名义占用"（标了已用、最后又被丢掉），
+     池子看着够用、实际第一轮补位找不到词，被迫掉进放宽逻辑，
+     把「袋装」这种别的 SKU 的规格词塞给了「1kg*2瓶」。 */
+  function canUse(w,s){
+    if(!w) return false;
+    if(isBlockedWord(w)) return false;                  // ★ 已删除的词不再分配给任何 SKU
+    if(s.spec.indexOf(w)>-1) return false;             // 规格里已有，不重复挂
+    if(strict && isBorrowed(w,s.raw)) return false;     // 严格模式：本 SKU 不真实具备的词不用
+    return true;
+  }
+
+  /* 第0轮：规格形态（补充装/旅行装/大桶装…）区分度最高，先锁 */
+  proc.forEach(function(pi){ var o=stubs[pi];
+    Object.keys(SPEC2INTENT).forEach(function(k){
+      if(!o.tag && o.s.raw.indexOf(k)>-1){ var w=SPEC2INTENT[k]; if(isBlockedWord(w)) return; if(allPool.indexOf(w)<0) allPool.push(w); if(!used[w]&&canUse(w,o.s)){ o.tag=w; } }
+    });
+    if(o.tag) used[o.tag]=1;
+  });
+  /* 第1轮：SKU 原文自带的卖点词（芦荟/泡沫/免洗/无香…）
+     ★ 这里不检查 used —— 真实性优先于「一词一入口」。
+     「芦荟x2+野菊花x2」这条确实含芦荟，就该写芦荟，哪怕「芦荟单瓶500g」也写了芦荟：
+     搜「芦荟洗手液4瓶」的人要能命中它。重复但真实，好过唯一但不全。 */
+  proc.forEach(function(pi){ var o=stubs[pi];
+    if(o.tag) return;
+    var d=dictScan(o.s.raw);
+    for(var i=0;i<d.length;i++){ if(!o.tag && canUse(d[i],o.s)) o.tag=d[i]; }
+    if(o.tag){ used[o.tag]=1; o.own=o.own||[]; o.own.push(o.tag); }
+  });
+  /* 第1.5轮：tag2 优先取本 SKU 原文里的另一个卖点词（同样豁免 used） */
+  proc.forEach(function(pi){ var o=stubs[pi];
+    if(o.tag2) return;
+    var d=dictScan(o.s.raw);
+    for(var i=0;i<d.length;i++){ if(!o.tag2 && d[i]!==o.tag && canUse(d[i],o.s)) o.tag2=d[i]; }
+    if(o.tag2){ used[o.tag2]=1; o.own=o.own||[]; o.own.push(o.tag2); }
+  });
+  /* 第二轮：SKU 原文里已有的词直接命中 */
+  proc.forEach(function(pi){ var o=stubs[pi];
+    if(o.tag) return;
+    allPool.forEach(function(w){ if(!o.tag && o.s.raw.indexOf(w)>-1 && !used[w] && canUse(w,o.s)) o.tag=w; });
+    if(o.tag) used[o.tag]=1;
+  });
+  /* 第三轮：没命中的按序轮转补位 */
+  proc.forEach(function(pi){ var o=stubs[pi], i=pi;
+    if(!o.tag){
+      for(var k=0;k<allPool.length;k++){ var w=allPool[(i+k)%allPool.length]; if(!used[w]&&canUse(w,o.s)){ o.tag=w; break; } }
+      if(o.tag) used[o.tag]=1;
+    }
+    if(!o.tag2){
+      for(var k2=0;k2<allPool.length;k2++){ var w2=allPool[(i+1+k2)%allPool.length]; if(!used[w2]&&canUse(w2,o.s)){ o.tag2=w2; break; } }
+    }
+    if(o.tag2) used[o.tag2]=1;
+  });
+  /* 严格模式：内置品类词（不是你查到的真实卖点）一律踢出池子 —— 宁可少词也不凭空造 */
+  if(strict) allPool=allPool.filter(function(w){ return !isBuiltin(w); });
+  var skus=stubs.map(function(o,i){
+    var s=o.s;
+    /* ★ 不矛盾校验（硬保证）：逐个加入候选，每加一个都与「规格 + 已选词」整体比对。
+       不只要查「词 vs 规格」，还要查「词 vs 词」——
+       「儿童 × 成人」单独看都不与规格冲突，放一起就是自相矛盾。
+       宁可少挂一个词，也不能写出自相矛盾的标题：规格与属性打架 = 要素不一致，平台可判商品信息不实。 */
+    var dropped=[];
+    var cand=[];
+    /* 候选词通用闸门：① 不含核心词/品牌（否则出现「洗手液洗手液」）
+       ② 严格模式下不得是内置词（必须是你真实查到的） */
+    var candOK=function(w){
+      return !!w && s.spec.indexOf(w)<0 && w.indexOf(core)<0 && w.indexOf(brand)<0
+             && !(strict && isBuiltin(w));
+    };
+    [o.tag,o.tag2].forEach(function(w){
+      if(!candOK(w)) return;
+      if(cand.length>=3) return;
+      if(findConflict([s.spec].concat(cand).concat([w])).length){ dropped.push(w); return; }
+      if(strict && isBorrowed(w,s.raw)){ dropped.push(w); return; }
+      cand.push(w);
+    });
+    /* 第 3 个位置优先补「本 SKU 原文里剩下的真实属性词」——
+       例如「芦荟500gx2+泡沫抑菌」原文自带 芦荟/泡沫/抑菌 三个，全都该写进去，
+       不能因为只分配了 2 个意图位就把「抑菌」这种核心卖点丢了。 */
+    dictScan(s.raw).forEach(function(w){
+      if(cand.length>=3) return;
+      if(cand.indexOf(w)>-1 || s.spec.indexOf(w)>-1) return;
+      if(findConflict([s.spec].concat(cand).concat([w])).length) return;
+      if(strict && isBorrowed(w,s.raw)) return;
+      cand.push(w);
+    });
+    /* 补位两轮：第一轮只用「还没被别的 SKU 占用」的词（保证一个词只占一个入口，
+       否则同一个词会在多条 SKU 标题里重复，等于浪费入口）；
+       第二轮放宽——池子被用光时才允许复用，避免 SKU 标题开天窗。两轮都要过不矛盾校验 */
+    for(var q=0;q<allPool.length&&cand.length<3;q++){
+      var wq=allPool[(i+2+q)%allPool.length];
+      if(cand.indexOf(wq)<0 && s.spec.indexOf(wq)<0 && !used[wq] &&
+         !findConflict([s.spec].concat(cand).concat([wq])).length && !(strict&&isBorrowed(wq,s.raw))){ cand.push(wq); used[wq]=1; }
+    }
+    for(var q2=0;q2<allPool.length&&cand.length<3;q2++){
+      var wq2=allPool[(i+2+q2)%allPool.length];
+      if(cand.indexOf(wq2)<0 && s.spec.indexOf(wq2)<0 &&
+         !findConflict([s.spec].concat(cand).concat([wq2])).length && !(strict&&isBorrowed(wq2,s.raw))) cand.push(wq2);
+    }
+    var pk=packSku(brand,core,cand,s.spec,30);
+    var st=pk.text, usedTags=pk.tags;   // usedTags = 30字符内真正装进去的词
+    var fx=fixText(st);
+    var bi=usedTags.filter(function(w){ return w && isBuiltin(w); });
+    var bw=usedTags.filter(function(w){ return w && isBorrowed(w,s.raw); });
+    /* ★ 每个 SKU 再给 3 条备选标题，走三条不同词路。
+       主推只占一个入口，实际投放要看数据换词，备选必须事先备好。
+       关键：备选**不受「你勾了什么」限制** —— 即使一个词都没勾选，
+       也要从完整词池（研究回填 + 热搜长尾 + 品类内置 + 时段词）里按搜索规则给出。
+       三条备选同样要过「不矛盾 + 严格模式真实性」校验，不能因为是备选就放水。 */
+    var altRoutes=[
+      {lb:"A",route:"场景人群路：抓「在哪用 / 谁在用」的搜索意图",
+       pool:uniq([].concat(poolFor("scene")).concat(poolFor("crowd")))},
+      {lb:"B",route:"热搜长尾路：抓蓝海值高的真实搜索词",
+       pool:(function(){
+         /* 热搜词是**完整搜索短语**（如「抑菌洗手液芦荟」「野菊花洗手液」），
+            整条塞进 SKU 标题会重复核心词 → 「蓝月亮洗手液野菊花洗手液255g」。
+            必须先拆：含核心词的先削掉核心词，再抽属性词；抽不到才取 2~6 字纯中文片段。 */
+         var hotRaw=uniq([].concat((state.hot||[]).map(function(r){return r.k;}))
+                           .concat((state.res&&state.res.hot)||[]))
+                      .filter(function(w){ return !isBlockedWord(w); });
+         var out=[];
+         hotRaw.forEach(function(h){
+           if(!h) return;
+           if(h.indexOf(core)>-1){
+             var rest=h.split(core).join(" ");
+             dictScan(rest).forEach(function(w){ out.push(w); });
+             rest.split(/[\s·、,，]+/).forEach(function(x){
+               if(/^[\u4e00-\u9fa5]{2,6}$/.test(x) && x.indexOf(core)<0) out.push(x);
+             });
+           }else{
+             var dd=dictScan(h);
+             if(dd.length) out=out.concat(dd);
+             else if(/^[\u4e00-\u9fa5]{2,6}$/.test(h)) out.push(h);
+           }
+         });
+         return uniq(out).filter(function(w){ return w && clen(w)<=12 && !(strict&&isBuiltin(w)); });
+       })()},
+      {lb:"C",route:"时段卖点路：抓当季营销主题 + 剩余功效词",
+       pool:uniq([].concat(mf.tag||[]).concat(poolFor("sell"))).filter(function(w){return !isBlockedWord(w);})}
+    ];
+    var alts=[];
+    altRoutes.forEach(function(rt,ri){
+      var ac=[];
+      /* 本 SKU 原文自带的真实属性词优先（真实性 > 一切），但必须与主推错开 */
+      dictScan(s.raw).forEach(function(w){
+        if(ac.length>=2) return;
+        if(rt.pool.indexOf(w)<0 && cand.indexOf(w)<0) return;
+        if(ac.indexOf(w)>-1 || s.spec.indexOf(w)>-1 || cand.indexOf(w)>-1) return;
+        if(findConflict([s.spec].concat(ac).concat([w])).length) return;
+        ac.push(w);
+      });
+      /* 从该词路取词：不受勾选限制，但必须过「不矛盾 + 严格模式真实性」 */
+      var altOK=function(w){
+        return !!w && !isBlockedWord(w) && ac.indexOf(w)<0 && s.spec.indexOf(w)<0 && clen(w)<=12
+          && w.indexOf(core)<0 && w.indexOf(brand)<0
+          && !findConflict([s.spec].concat(ac).concat([w])).length
+          && !(strict && isBuiltin(w))
+          && !(strict && isBorrowed(w,s.raw) && dictScan(s.raw).indexOf(w)<0);
+      };
+      for(var z=0;z<rt.pool.length&&ac.length<2;z++){
+        var wa=rt.pool[(i+ri+z)%rt.pool.length];
+        if(altOK(wa)) ac.push(wa);
+      }
+      /* 挑不到就换起点轮转，保证 3 条备选真的不一样 */
+      if(!ac.length){
+        for(var z2=0;z2<rt.pool.length&&ac.length<2;z2++){
+          var wb=rt.pool[(i+ri+1+z2)%rt.pool.length];
+          if(altOK(wb) && cand.indexOf(wb)<0) ac.push(wb);
+        }
+      }
+      /* 这条路确实没词 → 从储备池补。否则会出现「蓝月亮洗手液500g单瓶」这种
+         只剩规格、白白浪费 10 个字符位的标题 —— 备选的意义就是多给入口。 */
+      if(ac.length<2){
+        var fillPool=uniq([].concat(reserve).concat(allPool));
+        for(var z3=0;z3<fillPool.length&&ac.length<2;z3++){
+          var wc=fillPool[(i+ri+2+z3)%fillPool.length];
+          if(altOK(wc) && cand.indexOf(wc)<0) ac.push(wc);
+        }
+      }
+      if(!ac.length) return;
+      var ak=packSku(brand,core,ac,s.spec,30);
+      var afx=fixText(ak.text);
+      if(!afx.text || afx.text===fx.text) return;
+      alts.push({lb:rt.lb,route:rt.route,title:afx.text,len:clen(afx.text),
+                 intent:ak.tags.join(" / "),fix:afx.log,
+                 builtin:ak.tags.filter(function(w){ return w && isBuiltin(w); }),
+                 borrowed:ak.tags.filter(function(w){ return w && isBorrowed(w,s.raw); })});
+    });
+    /* 三条备选之间不能重复 */
+    var seenAlt={};
+    alts=alts.filter(function(a){ if(seenAlt[a.title]) return false; seenAlt[a.title]=1; return true; });
+    /* 成品再查一次：整条标题内部互斥 + 幽灵规格（标题里有、但 SKU 原文没这个容量） */
+    var cf=findConflict(fx.text.split(/\s+/).filter(Boolean));
+    var ghost=findGhostSpec(fx.text,s.raw);
+    return {raw:s.raw,price:s.price,spec:s.spec,intent:usedTags.join(" / "),title:fx.text,fix:fx.log,
+            len:clen(fx.text),idx:i,builtin:bi,borrowed:bw,conflict:cf,ghost:ghost,dropped:dropped,warn:s.warn,
+            own:uniq((o.own||[]).concat(dictScan(s.raw))),alts:alts};
+  });
+
+  // 主推排 1 号位
+  var order=skus.slice().sort(function(a,b){
+    if(a.idx===heroIdx) return -1; if(b.idx===heroIdx) return 1; return a.idx-b.idx;
+  });
+  order.forEach(function(s,i){s.rank=i+1;});
+  skus=order;
+
+  // 若用户此前点过「一键替换安全词」，重新生成也保持该偏好
+  if(state.softened){
+    titles.forEach(function(t){ var r=soften(t.text); t.text=r.text; t.log=t.log.concat(r.log); });
+    skus.forEach(function(s){ var r=soften(s.title); s.title=r.text; s.len=clen(r.text); });
+  }
+  // 统计：有多少个「未勾选的备选词」真的被 SKU 标题消化掉了
+  // 只统计「真的当意图词用了」的，spec 里自带的同名词不算（否则会虚报）
+  var usedReserve=reserve.filter(function(w){
+    return skus.some(function(s){ return s.intent.indexOf(w)>-1; });
+  });
+  var droppedAll=[]; skus.forEach(function(s){ droppedAll=droppedAll.concat(s.dropped||[]); });
+  LAST={brand:brand,cat:c,sell:sell,crowd:crowd,scene:scene,specAll:specAll,titles:titles,skus:skus,month:$("month").value,heroIdx:heroIdx,reserve:reserve,usedReserve:usedReserve,strict:strict,dropped:uniq(droppedAll)};
+  render();
+}
+
+function pick(e){ 
+  var box=$("titles").querySelectorAll(".tbox");
+  box.forEach(function(b){b.classList.remove("sel");});
+  e.currentTarget.classList.add("sel");
+  LAST.picked=e.currentTarget.querySelector(".val").textContent;
+}
+
+function render(){
+  var L=LAST;
+  /* 商品标题 */
+  $("titles").innerHTML=L.titles.map(function(t,i){
+    var lb=["宽覆盖型","卖点型","长尾精准型"][i]||"候选"+i;
+    return '<div class="tbox'+(i===0?' sel':'')+'"><div class="lab">'+lb+
+      '<span class="use" data-i="'+i+'" title="点击 = 选中并复制这条标题">选用并复制</span><span class="cnt">'+clen(t.text)+' / 60 字符</span></div>'+
+      '<div class="val">'+esc(t.text)+'</div>'+
+      (t.log.length?'<div class="lab" style="margin-top:6px;color:#A32D2D">已自动替换：'+esc(t.log.join("，"))+'</div>':'')+
+      '</div>';
+  }).join("");
+  var us=$("titles").querySelectorAll(".use");
+  us.forEach(function(u){u.onclick=function(){
+    var box=u.closest(".tbox");
+    $("titles").querySelectorAll(".tbox").forEach(function(b){b.classList.remove("sel");});
+    box.classList.add("sel");
+    var i=parseInt(u.getAttribute("data-i"),10);
+    L.picked=L.titles[i].text;
+    cpText(L.titles[i].text,u);
+  };});
+  /* 标题文字本身也可点复制（若正在手动选中文本则不抢） */
+  var vs=$("titles").querySelectorAll(".val");
+  vs.forEach(function(v){
+    v.title="点击复制这条标题（要手动选字就正常拖选，不会触发）";
+    v.onclick=function(){
+      if(!noSel())return;
+      var u=v.parentNode.querySelector(".use");if(!u)return;
+      $("titles").querySelectorAll(".tbox").forEach(function(b){b.classList.remove("sel");});
+      v.closest(".tbox").classList.add("sel");
+      var i=parseInt(u.getAttribute("data-i"),10);
+      L.picked=L.titles[i].text;
+      cpText(L.titles[i].text,u);
+    };
+  });
+  L.picked=L.titles[0].text;
+
+  /* SKU */
+  var rows=L.skus.map(function(s,i){
+    var ok=s.len<=30;
+    var h=scan(s.title);
+    var cTag = h.hard.length?'<span class="tag r">🔴'+esc(h.hard.join("、"))+'</span>'
+      : (h.soft.length?'<span class="tag a">🟡'+esc(h.soft.join("、"))+( $("licensed").checked?" ✓":"")+'</span>'
+      : '<span class="tag g">通过</span>');
+    return '<tr>'+
+      '<td><span class="tag '+(s.rank===1?'g':'')+'">'+s.rank+'</span></td>'+
+      '<td>'+esc(s.raw)+'</td>'+
+      '<td>'+
+        '<div class="svrow"><div class="sv mono edit" contenteditable="true" data-i="'+i+'" title="要改字直接在这里编辑">'+
+          esc(s.title)+'</div>'+
+          '<span class="cpb" data-i="'+i+'" title="点击复制这条主推标题">复制</span></div>'+
+        ((s.conflict&&s.conflict.length)||(s.ghost&&s.ghost.length)||(s.builtin&&s.builtin.length)||(s.borrowed&&s.borrowed.length)
+          ? '<div class="markw">'+
+            (s.conflict||[]).map(function(c){return '<span class="tag r" title="'+esc(c.why)+'">矛盾 '+esc(c.a)+'×'+esc(c.b)+'</span>';}).join(" ")+
+            (s.ghost||[]).map(function(g){return '<span class="tag r">凭空规格 '+esc(g)+'</span>';}).join(" ")+
+            (s.builtin||[]).map(function(w){return '<span class="tag a">内置词 '+esc(w)+'</span>';}).join(" ")+
+            (s.borrowed||[]).map(function(w){return '<span class="tag a">借用词 '+esc(w)+'</span>';}).join(" ")+
+            '</div>' : '')+
+        (s.alts&&s.alts.length
+          ? '<div class="althd">备选（点任意一条即复制，不切换主推）</div><div class="alts">'+s.alts.map(function(a,ai){
+              var bad=(a.builtin&&a.builtin.length)||(a.borrowed&&a.borrowed.length);
+              return '<span class="altchip'+(bad?' bad':'')+'" data-i="'+i+'" data-a="'+ai+'" title="'+esc(a.route)+'｜点击复制">'+
+                '<span class="lb">'+esc(a.lb)+'</span>'+esc(a.title)+
+                '<span class="ln">'+a.len+'</span>'+
+                '<span class="rt">'+esc(a.route.split('：')[0])+'</span></span>';
+            }).join("")+'</div>'
+          : '')+'</td>'+
+      '<td><span class="tag lenbadge '+(ok?'':'r')+'">'+s.len+'</span></td>'+
+      '<td>'+esc(s.intent||"—")+'</td>'+
+      '<td>'+cTag+'</td>'+
+      '</tr>';
+  }).join("");
+  $("skuOut").innerHTML='<table><thead><tr><th>排序</th><th>你的SKU</th><th>SKU搜索标题（≤15汉字 · 点「复制」即可）</th><th>字符</th><th>狙击意图</th><th>合规</th></tr></thead><tbody>'+rows+'</tbody></table>';
+  /* 备选：点一下就复制这条备选文本（不切换主推，主推永远是你自己定的那条） */
+  var altEls=$("skuOut").querySelectorAll(".altchip");
+  altEls.forEach(function(a){
+    a.onclick=function(){
+      var i=parseInt(a.getAttribute("data-i"),10), ai=parseInt(a.getAttribute("data-a"),10);
+      var alt=(L.skus[i].alts||[])[ai];
+      if(!alt) return;
+      cpText(alt.title,null);
+      $("skuOut").querySelectorAll(".altchip").forEach(function(x){x.classList.remove("copied");});
+      a.classList.add("copied");
+      clearTimeout(a._ct); a._ct=setTimeout(function(){a.classList.remove("copied");},900);
+    };
+  });
+  /* 主推：点「复制」复制当前（编辑后的）文本 */
+  var cpbs=$("skuOut").querySelectorAll(".cpb");
+  cpbs.forEach(function(b){
+    b.onclick=function(){
+      var i=parseInt(b.getAttribute("data-i"),10);
+      var sv=$("skuOut").querySelector('.sv.edit[data-i="'+i+'"]');
+      var t=sv?sv.textContent:L.skus[i].title;
+      LAST.skus[i].title=t.trim(); LAST.skus[i].len=clen(t.trim());
+      cpText(t,b);
+    };
+  });
+
+  /* 合规 */
+  var all=L.titles.map(function(t){return t.text;}).join(" ")+" "+L.skus.map(function(s){return s.title;}).join(" ");
+  var s=scan(all);
+  var msgs=[];
+  /* ★ SOP 硬约束自检：位置优先级 / 填充率 / 重复词 / SKU字数下限 / 内置词 / 规格未识别 */
+  var tb=L.titles[0].text, tbLen=clen(tb);
+  if(tbLen<52) msgs.push('<div class="alert a">⚠️ 商品标题只填了 <b>'+tbLen+'/60</b> 字符，SOP 要求填满不浪费。'+
+    '建议补充功效词、规格词或长尾词（词池不够就多查一轮竞品标题与搜索下拉词）。</div>');
+  var words=tb.split(/\s+/).filter(Boolean);
+  var dupW=words.filter(function(w,i){ return words.indexOf(w)!==i; });
+  if(dupW.length) msgs.push('<div class="alert r">❌ 商品标题有重复词 <b>'+esc(uniq(dupW).join("、"))+
+    '</b> —— SOP：同一关键词出现不超过 2 次，重复即堆砌信号。</div>');
+  var shortSku=L.skus.filter(function(s){ return s.len<20; });
+  if(shortSku.length) msgs.push('<div class="alert a">⚠️ '+shortSku.length+' 条 SKU 标题不足 20 字符（10 汉字），'+
+    '低于官方下限，建议补一个属性词或把规格写完整。</div>');
+  var biSkus=L.skus.filter(function(s){ return (s.builtin||[]).length; });
+  if(biSkus.length) msgs.push('<div class="alert r">⚠️ '+biSkus.length+' 条 SKU 用了<b>内置词库</b>兜底的词（不是你查到的真实卖点）：'+
+    biSkus.map(function(s){return '<span class="tag a">'+esc((s.builtin||[]).join("/"))+'</span>';}).join(" ")+
+    '<br><span style="opacity:.85">发布前必须确认商品确实具备该属性，否则属虚假宣传 + 要素不一致。可在左删掉后重新生成。</span></div>');
+  var bl=blockedAll();
+  if(bl.length) msgs.push('<div class="alert ok">\uD83D\uDEAB 已删除并<b>全局屏蔽 '+bl.length+' 个词</b>：'+
+    bl.map(function(w){return '<span class="tag">'+esc(w)+'</span>';}).join(" ")+
+    '<br><span style="opacity:.85">商品标题、SKU 主推与 3 条备选都不会再用这些词（含 SKU 名自带的同源词）。'+
+    '在左侧词池末尾点 \u21ba 可恢复。</span></div>');
+  var poolLeft=["sell","crowd","scene"].reduce(function(n,kk){ return n+poolFor(kk).length; },0);
+  if(poolLeft<8) msgs.push('<div class="alert a">\u26A0\uFE0F 删完之后三个词池只剩 <b>'+poolLeft+
+    ' 个可用词</b>（卖点 '+poolFor("sell").length+' / 人群 '+poolFor("crowd").length+' / 场景 '+poolFor("scene").length+
+    '），SKU 补位会不够用。<br>建议：恢复几个误删的词，或回去补一轮「商品速查」（多查几个竞品标题 + 搜索下拉词）把池子填满。</div>');
+  var warnSkus=L.skus.filter(function(s){ return s.warn; });
+  if(warnSkus.length) msgs.push('<div class="alert a">⚠️ '+warnSkus.length+' 条 SKU 没识别出标准规格（如「芦荟x2+野菊花x2」）。'+
+    '建议把 SKU 名写成 <b>500g*4瓶</b> 这种「容量*瓶数」格式，系统才能正确切出规格。</div>');
+
+  /* ===== ★ 不矛盾校验：SKU 标题「不得与自身规格矛盾 + 必须是该 SKU 真实具备的属性」=====
+     旧规则是「SKU标题包含于商品标题」，但 60 字符硬上限下必然装不下（2瓶/4瓶/大容量…），
+     所以改为两条可执行的判定：① 标题内部互斥属性不得同现 ② 每个属性词必须能溯源 */
+  var cfSkus=L.skus.filter(function(s){ return (s.conflict||[]).length; });
+  if(cfSkus.length){
+    msgs.push('<div class="alert r">❌ '+cfSkus.length+' 条 SKU 标题<b>自相矛盾</b>：'+
+      cfSkus.map(function(s){return '<span class="tag r">'+esc(s.spec)+' → '+esc(s.conflict[0].a)+' × '+esc(s.conflict[0].b)+'</span>';}).join(" ")+
+      '<br><span style="opacity:.85">'+esc(cfSkus[0].conflict[0].why)+'。规格与属性打架 = 要素不一致，平台可判商品信息不实，请改写 SKU 名或删掉冲突词。</span></div>');
+  }else{
+    msgs.push('<div class="alert ok">✅ <b>不矛盾校验</b>通过：'+L.skus.length+' 条 SKU 标题内部无互斥属性（已检查单只/多只、袋装/瓶装、补充装/整装、便携/大容量、儿童/成人、男士/女士、无香/香型、免洗/水洗、宠物/母婴、固态/液态 共 10 组互斥关系）。</div>');
+  }
+  var ghSkus=L.skus.filter(function(s){ return (s.ghost||[]).length; });
+  if(ghSkus.length) msgs.push('<div class="alert r">❌ '+ghSkus.length+' 条 SKU 标题写了<b>该 SKU 没有的容量</b>：'+
+    ghSkus.map(function(s){return '<span class="tag r">'+esc(s.spec)+' → '+esc(s.ghost.join("、"))+'</span>';}).join(" ")+
+    '<br><span style="opacity:.85">标题里的规格数字必须与该 SKU 实际规格一致。</span></div>');
+  var bwSkus=L.skus.filter(function(s){ return (s.borrowed||[]).length; });
+  if(bwSkus.length) msgs.push('<div class="alert a">⚠️ '+bwSkus.length+' 条 SKU 用了<b>别的 SKU 的属性词</b>（本 SKU 未必具备）：'+
+    bwSkus.map(function(s){return '<span class="tag a">'+esc(s.spec)+' → '+esc((s.borrowed||[]).join("/"))+'</span>';}).join(" ")+
+    '<br><span style="opacity:.85">例如「薰衣草」只在某一条 SKU 名里出现过，别的规格不香这个味。确认一下，或勾上「严格模式」自动禁用借用词。</span></div>');
+  if(L.dropped&&L.dropped.length){
+    msgs.push('<div class="alert ok">🛡 生成时已自动丢弃 <b>'+L.dropped.length+'</b> 个「与规格矛盾 / 本 SKU 不真实具备」的词：'+
+      L.dropped.map(function(d){return '<span class="tag">'+esc(d)+'</span>';}).join(" ")+'　（宁可少一个词，也不写矛盾或不实的标题）</div>');
+  }
+  /* 意图词被多条 SKU 复用 = 同一个词占了多个入口，浪费收录位 */
+  /* 重复分两类：① 多条 SKU 原文都真实具备（如芦荟款/芦荟组合装都含芦荟）→ 合理，不报警
+     ② 补位词被复用（该 SKU 原文里没有这个词）→ 浪费入口，报警 */
+  var seen={},dupIntent=[];
+  L.skus.forEach(function(s){
+    (s.intent||"").split(" / ").forEach(function(w){
+      if(!w) return;
+      if((s.own||[]).indexOf(w)>-1) return;      // 本 SKU 真实具备 → 重复也合理
+      if(seen[w]) dupIntent.push(w); else seen[w]=1;
+    });
+  });
+  dupIntent=uniq(dupIntent);
+  if(dupIntent.length) msgs.push('<div class="alert a">⚠️ '+dupIntent.length+' 个意图词被多条 SKU 复用：<b>'+esc(dupIntent.join("、"))+
+    '</b> —— 同一个词占多个入口等于浪费收录位。'+(L.strict?'严格模式下说明<b>真实词池已用尽</b>，建议多查一轮竞品标题与搜索下拉词补池，或把主推品拆成独立链接。':'建议补词或缩减 SKU 数。')+'</div>');
+  /* 商品标题内部互斥 */
+  var tbCf=findConflict(words);
+  if(tbCf.length) msgs.push('<div class="alert r">❌ 商品标题<b>自相矛盾</b>：<b>'+esc(tbCf[0].a)+'</b> × <b>'+esc(tbCf[0].b)+'</b>（'+esc(tbCf[0].why)+'）。</div>');
+  /* 严格模式状态 */
+  var emptySkus=L.skus.filter(function(s){ return !s.intent; });
+  if(L.strict){
+    msgs.push('<div class="alert '+(emptySkus.length?'a':'ok')+'">🔒 <b>严格模式已生效</b>：SKU 标题只用了「该 SKU 规格名 + 研究词池 + 你勾选的词」，'+
+      '内置品类词库与借用词均未进入。'+(emptySkus.length?
+      '<br>⚠️ 其中 <b>'+emptySkus.length+'</b> 条 SKU 没分到真实属性词（词池不够，系统选择留空而不是编造）。'+
+      '建议：① 多查一轮竞品标题补词 ② 把该 SKU 名写详细点（如「泡沫型255g」）③ 或取消严格模式让它用通用词兜底（但需自行核实）。'
+      :'　全部 SKU 都拿到了可溯源的属性词。')+'</div>');
+  }else{
+    msgs.push('<div class="alert a">⚠️ <b>严格模式未开启</b>：词池不够时会用<b>内置品类通用词</b>兜底，这些词不是你查到的真实卖点，'+
+      '写上去可能构成虚假宣传 + 要素不一致。建议在左侧勾选「严格模式」。</div>');
+  }
+  /* 词覆盖报告：已选词 vs 备选词的去向 */
+  if(L.usedReserve&&L.usedReserve.length){
+    msgs.push('<div class="alert ok">📌 未勾选的 <b>'+L.usedReserve.length+'</b> 个备选词已被 SKU 标题消化：'+
+      L.usedReserve.map(function(w){return '<span class="tag">'+esc(w)+'</span>';}).join(" ")+
+      '<br><span style="opacity:.85">商品标题装不下，但这些词各自占住了一个 SKU 搜索入口 —— 抽到的词不用删。</span></div>');
+  }else if(L.reserve&&L.reserve.length){
+    msgs.push('<div class="alert a">📌 还有 <b>'+L.reserve.length+'</b> 个备选词没排上（SKU 入口位不够）。'+
+      '想让它们有收录机会，可以：① 把最想推的那个 SKU 拆成独立链接 ② 把次要词换进商品标题 ③ 留给下一批 SKU。</div>');
+  }
+  var prices=L.skus.map(function(s){return s.price;}).filter(function(p){return p&&!isNaN(p);});
+  if(prices.length>=2){
+    var mx=Math.max.apply(null,prices),mn=Math.min.apply(null,prices);
+    var ratio=mx/mn;
+    if(ratio>5) msgs.push('<div class="alert r">⚠ SKU 价差 <b>'+ratio.toFixed(1)+' 倍</b>（'+mn+' → '+mx+'）。超过 5 倍易被判「商品价格跨度过大 / 低价引流」，建议拆链接或收窄价差。</div>');
+    else if(ratio>3) msgs.push('<div class="alert a">SKU 价差 '+ratio.toFixed(1)+' 倍，属可接受区间但偏高，注意最低价 SKU 不要做成「补差价 / 小样 / 赠品」性质。</div>');
+    else msgs.push('<div class="alert ok">SKU 价差 '+ratio.toFixed(1)+' 倍，梯度合理。</div>');
+  }else{
+    msgs.push('<div class="alert a">未填价格，跳过价差检查。建议在 SKU 后加 <span class="mono">| 价格</span> 自动校验。</div>');
+  }
+  /* 分级合规：🔴 硬性违禁 / 🟡 资质条件词 */
+  if(s.hard.length){
+    msgs.push('<div class="alert r">🔴 硬性违禁词 <b>'+esc(s.hard.join("、"))+'</b> —— 已自动替换为：'+
+      s.hard.map(function(h){return esc(h)+' → '+esc(BAN.hardRep[h]||"（已删）");}).join("，")+
+      '<br>这些是极限词/医疗疗效词，任何资质都不能用，若仍出现在标题里请手工删除。</div>');
+  }else{
+    msgs.push('<div class="alert ok">🔴 硬性违禁（极限词 / 医疗疗效词）：未命中，通过。</div>');
+  }
+  if(s.soft.length){
+    var lic=$("licensed").checked;
+    msgs.push('<div class="alert '+(lic?'a':'a')+'">🟡 <b>功效词 '+(lic?'（你已声明有资质，原样保留）':'（需资质，已保留待你确认）')+'：'+esc(s.soft.join("、"))+'</b>'+
+      '<br>'+s.soft.map(function(w){return '· <b>'+esc(w)+'</b>：'+esc(BAN.soft[w]);}).join("<br>")+
+      '<br><button class="mini" id="btnSoften" style="margin-top:8px">我没有这些资质 → 一键替换成安全词</button></div>');
+  }else{
+    msgs.push('<div class="alert ok">🟡 功效资质词：无（如果你本来想写「抑菌/除菌」却没出现，说明词池里没选到，去左侧加了再生成）。</div>');
+  }
+  var bad=L.skus.filter(function(s){return s.len>30;});
+  if(bad.length) msgs.push('<div class="alert r">'+bad.length+' 条 SKU 标题超过 30 字符，已在表格标红，需手工精简。</div>');
+  msgs.push('<div class="alert a">本品类功效宣称清单（<b>不是禁用，是需资质</b>）：'+(L.cat.ban||[]).map(function(b){return '<b>'+esc(b)+'</b>';}).join("、")+
+    '。有消字号 / 国妆特字 / 检测报告就能用 —— 这些往往是该类目搜索量最大的词，别轻易放弃。</div>');
+  msgs.push('<div class="alert a">发布前必查：商品标题 / 后台属性 / SKU属性 / 主图 / 详情 五处信息必须一致，2026 平台重点稽查项。</div>');
+
+  /* ===== 2026 新增规则自检：商品信息质量分 + 销量不累计 ===== */
+  var qf=[];
+  var tLen=L.titles.map(function(t){return clen(t.text);});
+  var tMax=Math.max.apply(null,tLen);
+  if(tMax>60) qf.push({lv:"r",t:"商品标题 "+tMax+"/60 字符超限 → 基础质量分扣「准确性」，<60 分将被限制搜索曝光"});
+  else qf.push({lv:"ok",t:"商品标题 "+tMax+"/60 字符，合规"});
+  var over=L.skus.filter(function(s){return s.len>30;});
+  if(over.length) qf.push({lv:"r",t:over.length+" 条 SKU 标题超 30 字符（非3C 上限为 20~30 字符 / 10~15 汉字）→ 质量分扣「合规性」"});
+  else qf.push({lv:"ok",t:"全部 "+L.skus.length+" 条 SKU 标题在 20~30 字符内，符合非3C 行业规范"});
+  if(prices.length>=2){
+    var mnP=Math.min.apply(null,prices);
+    if(mnP<1) qf.push({lv:"r",t:"最低 SKU 价 "+mnP+" 元 < 1 元 → 触发「低价引流」质量分扣分项；且若该价低于一口价 3 折，该订单销量不累计"});
+    else qf.push({lv:"ok",t:"最低 SKU 价 "+mnP+" 元，未触及「一口价3折且<1元」的销量删除红线"});
+  }else qf.push({lv:"a",t:"未填价格 → 无法校验低价引流红线，建议在 SKU 后加 <span class=\"mono\">| 价格</span>"});
+  qf.push({lv:"a",t:"<b>改 SKU 的代价</b>（2026-01-23 生效）：修改/删除/新增 SKU 导致商品核心信息实质变更 → 该商品历史订单销量可能不累计。要下架 SKU 请<b>把库存调为 0</b>，不要直接删除"});
+  qf.push({lv:"a",t:"<b>基础质量分档位</b>：&lt;60 限制搜索/首猜/大促曝光 · ≥80 触发扶优权益 · ≥85 优秀（曝光约 3 倍）· 100 分（曝光约 6 倍）。扣分项含：低价SKU引流、类目错放、违禁词、品牌标属不一致"});
+  msgs.push('<div class="alert ok" style="background:#F7F7F5"><div style="font-weight:600;margin-bottom:7px">📋 2026 质量分 · 销量规则自检</div>'+
+    qf.map(function(x){return '<div style="margin:4px 0;color:'+(x.lv=="r"?"#A32D2D":x.lv=="a"?"#8A6100":"#2E7D32")+'">'+(x.lv=="r"?"⛔ ":x.lv=="a"?"⚠ ":"✓ ")+x.t+'</div>';}).join("")+
+    '<div style="margin-top:8px;opacity:.75;font-size:11px">档位倍数为平台公告转述，具体分值以千牛后台实际显示为准。</div></div>');
+
+  $("compliance").innerHTML=msgs.join("");
+
+  /* 主图指令 */
+  $("imgOut").innerHTML=L.skus.map(function(s){
+    return '<div class="tbox"><div class="lab">SKU '+s.rank+' · '+esc(s.raw)+'</div>'+
+      '<div class="val" style="font-family:inherit">拍摄主体：'+esc(s.spec)+' 实物正面 + 容量刻度可见<br>'+
+      '画面卖点：'+esc(s.intent||L.sell[0])+'<br>'+
+      '规格：1440×1440 起，1:1，≤20MB，不可二次压缩，无水印无牛皮癣<br>'+
+      '<span style="color:#A32D2D">禁止与其他 SKU 共用同一张图，共用会被压搜索展现</span></div></div>';
+  }).join("");
+
+  var eds=$("skuOut").querySelectorAll(".sv.edit");
+  eds.forEach(function(td){
+    td.oninput=function(){
+      var i=parseInt(td.getAttribute("data-i"),10);
+      var t=td.textContent.trim();
+      LAST.skus[i].title=t; LAST.skus[i].len=clen(t);
+      var b=td.parentNode.parentNode.querySelector(".lenbadge");
+      if(b){ b.textContent=LAST.skus[i].len; b.className="tag lenbadge"+(LAST.skus[i].len>30?" r":""); }
+    };
+  });
+
+  var bs=$("btnSoften");
+  if(bs) bs.onclick=function(){
+    var n=0;
+    LAST.titles.forEach(function(t){ var r=soften(t.text); if(r.log.length){ t.text=r.text; t.log=t.log.concat(r.log); n++; } });
+    LAST.skus.forEach(function(s){ var r=soften(s.title); if(r.log.length){ s.title=r.text; s.len=clen(r.text); n++; } });
+    state.softened=true;
+    render();
+  };
+}
+
+/* ============ 导出 ============ */
+function syncEdits(){
+  if(!LAST) return;
+  var eds=document.querySelectorAll("#skuOut .sv.edit");
+  for(var i=0;i<eds.length;i++){
+    var k=parseInt(eds[i].getAttribute("data-i"),10);
+    var t=eds[i].textContent.trim();
+    LAST.skus[k].title=t; LAST.skus[k].len=clen(t);
+  }
+}
+function expCsv(){
+  if(!LAST){alert("请先生成");return;}
+  syncEdits();
+  var L=LAST;
+  var lines=["类型,排序,SKU原文,内容,字符数,狙击意图,备选"];
+  L.titles.forEach(function(t,i){lines.push("商品标题,"+(i+1)+",,\""+t.text+"\","+clen(t.text)+",,");});
+  L.skus.forEach(function(s){
+    var al=(s.alts||[]).map(function(a){return a.lb+":"+a.title+"("+a.len+")";}).join(" | ");
+    lines.push("SKU主推,"+s.rank+",\""+s.raw+"\",\""+s.title+"\","+s.len+","+s.intent+",");
+    (s.alts||[]).forEach(function(a){
+      lines.push("SKU备选,"+s.rank+",\""+s.raw+"\",\""+a.title+"\","+a.len+","+a.intent+","+a.route);
+    });
+  });
+  dl(lines.join("\n"),"标题_SKU搜索标题.csv","text/csv;charset=utf-8");
+}
+function expMd(){
+  if(!LAST){alert("请先生成");return;}
+  syncEdits();
+  var L=LAST;
+  var md="# "+(L.brand?L.brand+" ":"")+L.cat.n+" · 标题方案（"+L.month+"月）\n\n## 商品标题（60字符）\n\n";
+  L.titles.forEach(function(t,i){md+=(i+1)+". ["+["宽覆盖","卖点型","长尾"][i]+"] `"+t.text+"`　（"+clen(t.text)+"字符）\n";});
+  md+="\n## SKU搜索标题（≤15汉字）\n\n**主推**\n\n| 排序 | SKU | 搜索标题 | 字符 | 意图 |\n|---|---|---|---|---|\n";
+  L.skus.forEach(function(s){md+="| "+s.rank+" | "+s.raw+" | `"+s.title+"` | "+s.len+" | "+s.intent+" |\n";});
+  md+="\n**备选（3条／SKU，按词路分）**\n\n| 排序 | SKU | 词路 | 备选标题 | 字符 |\n|---|---|---|---|---|\n";
+  L.skus.forEach(function(s){
+    (s.alts||[]).forEach(function(a){
+      md+="| "+s.rank+" | "+s.raw+" | "+a.route+" | `"+a.title+"` | "+a.len+" |\n";
+    });
+  });
+  md+="\n## SKU搜索主图\n\n";
+  L.skus.forEach(function(s){md+="- "+s.raw+"：1440×1440，1:1，主体 "+s.spec+"，卖点 "+s.intent+"，≤20MB 不二次压缩\n";});
+  dl(md,"标题方案.md","text/markdown;charset=utf-8");
+}
+function dl(txt,name,mime){
+  var b=new Blob(["\uFEFF"+txt],{type:mime});
+  var a=document.createElement("a");a.href=URL.createObjectURL(b);a.download=name;a.click();
+}
+function copyPrompt(){
+  var c=cur();
+  var d=new Date();
+  var p=buildPrompt();
+  if(navigator.clipboard&&navigator.clipboard.writeText){
+    navigator.clipboard.writeText(p).then(function(){alert("已复制研究指令，去联网查完把结果粘回「商品速查」卡片即可");});
+  }else{
+    var ta=document.createElement("textarea");ta.value=p;document.body.appendChild(ta);ta.select();document.execCommand("copy");ta.remove();
+    alert("已复制研究指令");
+  }
+}
+</script>
+<div id="toast"></div>
+</body>
+</html>
