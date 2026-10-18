@@ -36,6 +36,7 @@ node _blockcheck.js    # 删除屏蔽验收
 node _shrinkcheck.js   # 删除不补位验收
 node _capcheck.js      # 词池排序与硬上限验收
 node _clscheck.js      # 卖点/人群/场景 归类验收
+node _layoutcheck.js   # 双栏固定 / 拖拽调宽 / 回顶按钮 / 预填值清空 验收
 ```
 
 `workbench/_patch_*.py` 为历次迭代的补丁脚本，保留作变更留痕。

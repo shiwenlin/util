@@ -16,8 +16,20 @@ body{background:var(--bg);color:var(--tx);font:14px/1.6 -apple-system,"PingFang 
 .wrap{max-width:1280px;margin:0 auto}
 h1{font-size:18px;font-weight:500;margin-bottom:4px}
 .sub{font-size:13px;color:var(--tx2);margin-bottom:18px}
-.grid{display:grid;grid-template-columns:400px 1fr;gap:16px;align-items:start}
-@media(max-width:1000px){.grid{grid-template-columns:1fr}}
+.grid{display:flex;align-items:flex-start;gap:0}
+#paneL{width:var(--lw,400px);flex:0 0 auto;position:sticky;top:20px;max-height:calc(100vh - 40px);overflow-y:auto;padding-right:8px;scrollbar-width:thin}
+#paneR{flex:1 1 0;min-width:0;position:sticky;top:20px;max-height:calc(100vh - 40px);overflow-y:auto;padding-left:8px;scrollbar-width:thin}
+#paneL::-webkit-scrollbar,#paneR::-webkit-scrollbar{width:8px}
+#paneL::-webkit-scrollbar-thumb,#paneR::-webkit-scrollbar-thumb{background:var(--line);border-radius:4px}
+#paneL::-webkit-scrollbar-thumb:hover,#paneR::-webkit-scrollbar-thumb:hover{background:var(--tx3)}
+#splitter{flex:0 0 9px;align-self:stretch;min-height:120px;cursor:col-resize;position:relative;background:transparent}
+#splitter::after{content:"";position:absolute;left:3.5px;top:4px;bottom:4px;width:2px;background:var(--line);border-radius:2px;transition:background .15s}
+#splitter:hover::after,#splitter.on::after{background:var(--blue);width:3px;left:3px}
+body.rs{user-select:none;cursor:col-resize}
+#toTop{position:fixed;right:24px;bottom:24px;width:44px;height:44px;border-radius:50%;background:var(--card);border:1px solid var(--line);color:var(--tx2);font-size:17px;line-height:1;cursor:pointer;display:flex;align-items:center;justify-content:center;box-shadow:0 2px 12px rgba(0,0,0,.13);opacity:0;pointer-events:none;transform:translateY(8px);transition:opacity .18s,transform .18s,background .15s;z-index:900;font-family:inherit}
+#toTop.on{opacity:1;pointer-events:auto;transform:none}
+#toTop:hover{background:var(--blue-bg);color:var(--blue);border-color:var(--blue)}
+@media(max-width:1000px){.grid{display:block}#paneL,#paneR{width:auto;max-height:none;overflow:visible;position:static;padding:0}#splitter{display:none}#paneR{margin-top:14px}}
 .card{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:16px;margin-bottom:14px}
 .card h2{font-size:14px;font-weight:500;margin-bottom:12px;display:flex;align-items:center;gap:8px}
 .card h2 .n{width:20px;height:20px;border-radius:6px;background:var(--tx);color:#fff;font-size:11px;display:flex;align-items:center;justify-content:center}
@@ -111,7 +123,7 @@ button.mini{font-size:12px;padding:6px 11px;margin-top:6px}
 <p class="sub">2026 搜索下沉到 SKU 级 · 商品标题 60字符 · SKU搜索标题 15汉字（30字符）· 自带违禁词拦截</p>
 
 <div class="grid">
-<div>
+<div id="paneL">
   <div class="card">
     <h2><span class="n">0</span>商品速查 · 先查品，再选词</h2>
     <label>输入你的商品名（含品牌+功效更好），自动识别品类并生成联网研究指令</label>
@@ -164,8 +176,8 @@ button.mini{font-size:12px;padding:6px 11px;margin-top:6px}
     <div class="chips" id="cCrowd"></div>
     <label>使用场景 <span id="sceneCnt" class="tag"></span></label>
     <div class="chips" id="cScene"></div>
-    <label>规格概览（写进商品标题的容量/组合，可留空）</label>
-    <input type="text" id="specAll" placeholder="例：500ml*2瓶">
+    <label>规格概览（写进商品标题的容量/组合，可留空，例：500ml*2瓶）</label>
+    <input type="text" id="specAll">
     <div class="hint">
       <b>实线蓝框</b>=已选，按选中顺序<b>优先写进商品标题</b>（60字符放不下会自动截断）；
       <b>虚线灰框</b>=备选，不进商品标题，但会<b>自动补位到各 SKU 搜索标题</b>。<br>
@@ -180,11 +192,7 @@ button.mini{font-size:12px;padding:6px 11px;margin-top:6px}
   <div class="card">
     <h2><span class="n">3</span>SKU 清单</h2>
     <label>每行一个 SKU，可带价格（用 | 或 空格分隔）</label>
-    <textarea id="skus">500ml单瓶
-500ml*2瓶
-300ml单瓶
-儿童款300ml
-1L补充装</textarea>
+    <textarea id="skus" style="min-height:110px"></textarea>
     <div class="hint">例：<span class="mono">500ml*2瓶 | 39.9</span>　带价格会自动做「价差 / 低价引流」检查</div>
     <label>主推 SKU（排 1 号位，搜索页优先展示它）</label>
     <select id="hero"></select>
@@ -205,8 +213,8 @@ button.mini{font-size:12px;padding:6px 11px;margin-top:6px}
     <button id="copyPrompt">复制检索指令</button>
   </div>
 </div>
-
-<div>
+<div id="splitter" title="左右拖动调整宽度 · 双击复位"></div>
+<div id="paneR">
   <div class="card">
     <h2><span class="n">4</span>商品标题（60字符 / 30汉字）— 点选你要的那条</h2>
     <div id="titles"><p class="empty">先在左侧配置，点「生成」</p></div>
@@ -1331,6 +1339,7 @@ function run(){
      ③ 内置品类词库（通用词，不属于这个品 → 严格模式禁用）
      borrowed = 只在「别的 SKU 原文」里出现过的词，本 SKU 未必具备 → 严格模式同样禁用 */
   var linesAll=$("skus").value.split("\n").map(function(s){return s.trim();}).filter(Boolean).map(parseSku);
+  if(!linesAll.length) toast("SKU 清单是空的 —— 商品标题已生成；SKU 搜索标题要在左侧填好规格后再生成一次");
   strict=!!($("strictSrc") && $("strictSrc").checked);
   var dictPool=[];
   linesAll.forEach(function(s){ dictPool=dictPool.concat(dictScan(s.raw)); });
@@ -1968,5 +1977,38 @@ function copyPrompt(){
 }
 </script>
 <div id="toast"></div>
+<button id="toTop" title="回到顶部" aria-label="回到顶部">&#8593;</button>
+<script>
+(function(){
+  var L=document.getElementById('paneL'),R=document.getElementById('paneR'),
+      SP=document.getElementById('splitter'),TT=document.getElementById('toTop'),
+      G=document.querySelector('.grid');
+  function setW(w){ document.documentElement.style.setProperty('--lw',w+'px'); }
+  try{ var m=localStorage.getItem('wb_lw'); if(m&&parseInt(m,10)>0) setW(parseInt(m,10)); }catch(e){}
+  if(SP){
+    var drag=false;
+    SP.addEventListener('mousedown',function(e){ drag=true; SP.classList.add('on'); document.body.classList.add('rs'); e.preventDefault(); });
+    SP.addEventListener('dblclick',function(){ setW(400); try{ localStorage.setItem('wb_lw','400'); }catch(e){} });
+    document.addEventListener('mousemove',function(e){
+      if(!drag||!G) return;
+      var g=G.getBoundingClientRect();
+      var max=Math.max(320, Math.min(760, g.width-340));
+      setW(Math.min(Math.max(e.clientX-g.left,280),max));
+    });
+    document.addEventListener('mouseup',function(){
+      if(!drag) return; drag=false; SP.classList.remove('on'); document.body.classList.remove('rs');
+      try{ localStorage.setItem('wb_lw', getComputedStyle(document.documentElement).getPropertyValue('--lw').trim()); }catch(e){}
+    });
+  }
+  function top0(el){ if(!el) return; try{ el.scrollTo({top:0,behavior:'smooth'}); }catch(e){ el.scrollTop=0; } }
+  function upd(){
+    var y=(L?L.scrollTop:0)+(R?R.scrollTop:0)+(window.pageYOffset||document.documentElement.scrollTop||0);
+    TT.classList[y>150?'add':'remove']('on');
+  }
+  [L,R].forEach(function(el){ if(el) el.addEventListener('scroll',upd); });
+  window.addEventListener('scroll',upd); upd();
+  TT.addEventListener('click',function(){ top0(L); top0(R); try{ window.scrollTo({top:0,behavior:'smooth'}); }catch(e){ window.scrollTo(0,0); } });
+})();
+</script>
 </body>
 </html>
