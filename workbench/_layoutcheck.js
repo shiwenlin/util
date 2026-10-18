@@ -44,9 +44,9 @@ else if(ta[1].trim()==='') ok('SKU 清单 textarea 无预填值');
 else fail('SKU 清单仍有预填值：'+JSON.stringify(ta[1].slice(0,30)));
 const spec=html.match(/<input type="text" id="specAll"[^>]*>/);
 if(!spec) fail('找不到 #specAll');
-else if(spec[0].indexOf('placeholder')<0) ok('规格概览 input 无 placeholder');
-else fail('规格概览仍有 placeholder');
-if(/规格概览[^<]*例：500ml\*2瓶/.test(html)) ok('规格示例挪到 label（仍可见）'); else fail('规格示例丢失');
+else if(/placeholder="例：500ml\*2瓶"/.test(spec[0])) ok('规格概览 placeholder = 例：500ml*2瓶');
+else fail('规格概览 placeholder 不对：'+spec[0]);
+if(!/规格概览[^<]*例：/.test(html)) ok('示例只在 placeholder，label 不重复'); else fail('label 与 placeholder 示例重复');
 
 console.log('\n===== 4. 交互脚本（回顶 + 拖拽）=====');
 const blocks=[...html.matchAll(/<script>([\s\S]*?)<\/script>/g)].map(m=>m[1]);

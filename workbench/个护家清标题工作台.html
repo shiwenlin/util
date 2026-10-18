@@ -130,7 +130,9 @@ button.mini{font-size:12px;padding:6px 11px;margin-top:6px}
     <input type="text" id="pname" placeholder="例：蓝月亮抑菌洗手液">
     <button class="mini" id="btnGuess">① 识别品类</button>
     <button class="mini" id="btnPrompt">② 生成联网研究指令</button>
+    <button class="mini" id="btnReset">重置</button>
     <div id="guessInfo" class="hint">未识别 · 也可直接在下方手动选类目</div>
+    <div class="hint">换一个商品重新识别时，下面已填的品牌 / 规格 / SKU 清单 / 研究文本 / 词池 / 生成结果会<b>自动清空</b>，避免上一个商品的词混进新品标题。点「重置」可随时手动清空。</div>
     <div id="promptWrap" style="display:none">
       <label>把这段指令丢给 AI / 搜索框去查（查的是真实在售信息，不是猜）</label>
       <div class="pbox" id="promptTxt"></div>
@@ -176,8 +178,8 @@ button.mini{font-size:12px;padding:6px 11px;margin-top:6px}
     <div class="chips" id="cCrowd"></div>
     <label>使用场景 <span id="sceneCnt" class="tag"></span></label>
     <div class="chips" id="cScene"></div>
-    <label>规格概览（写进商品标题的容量/组合，可留空，例：500ml*2瓶）</label>
-    <input type="text" id="specAll">
+    <label>规格概览（写进商品标题的容量/组合，可留空）</label>
+    <input type="text" id="specAll" placeholder="例：500ml*2瓶">
     <div class="hint">
       <b>实线蓝框</b>=已选，按选中顺序<b>优先写进商品标题</b>（60字符放不下会自动截断）；
       <b>虚线灰框</b>=备选，不进商品标题，但会<b>自动补位到各 SKU 搜索标题</b>。<br>
@@ -192,7 +194,7 @@ button.mini{font-size:12px;padding:6px 11px;margin-top:6px}
   <div class="card">
     <h2><span class="n">3</span>SKU 清单</h2>
     <label>每行一个 SKU，可带价格（用 | 或 空格分隔）</label>
-    <textarea id="skus" style="min-height:110px"></textarea>
+    <textarea id="skus" style="min-height:110px" placeholder="500ml单瓶&#10;500ml*2瓶 | 39.9&#10;300ml单瓶 | 19.9&#10;儿童款300ml&#10;1L补充装"></textarea>
     <div class="hint">例：<span class="mono">500ml*2瓶 | 39.9</span>　带价格会自动做「价差 / 低价引流」检查</div>
     <label>主推 SKU（排 1 号位，搜索页优先展示它）</label>
     <select id="hero"></select>
@@ -696,8 +698,9 @@ var MAXSEL={sell:6,crowd:3,scene:3};
   $("copyPrompt").onclick=copyPrompt;
   $("csvFile").onchange=readCsv;
   $("skus").oninput=loadHero;
-  $("btnGuess").onclick=doGuess;
+  $("btnGuess").onclick=function(){ maybeResetOnNewProduct(); doGuess(); };
   $("btnPrompt").onclick=function(){
+    maybeResetOnNewProduct();
     doGuess(true);
     $("promptTxt").textContent=buildPrompt();
     $("promptWrap").style.display="block";
@@ -709,6 +712,12 @@ var MAXSEL={sell:6,crowd:3,scene:3};
     var b=$("btnCopy"); b.textContent="已复制 ✓"; setTimeout(function(){b.textContent="复制指令";},1500);
   };
   $("btnParse").onclick=doParse;
+  $("btnReset").onclick=function(){
+    if(!isDirty()){ toast("已经是初始状态，没有可清空的内容"); return; }
+    resetAll(); state.lastPname="";
+    var pn=$("pname"); if(pn) pn.value="";
+    toast("已清空全部内容，回到初始状态");
+  };
   $("strictSrc").onchange=function(){
     var b=$("strictBox"), on=$("strictSrc").checked;
     b.className=on?"lic":"lic off";
@@ -722,6 +731,52 @@ var MAXSEL={sell:6,crowd:3,scene:3};
     else{ b.className="lic off"; b.innerHTML="当前：未勾选资质 · 功效词会<b>保留</b>但标黄提醒，请自行确认资质后再上架"; }
   };
 })();
+
+/* 页面是否已经有「上一个商品」留下的内容 */
+function isDirty(){
+  var v=function(id){ var e=$(id); return e?(e.value||"").trim():""; };
+  if(v("brand")||v("specAll")||v("skus")||v("research")) return true;
+  if(LAST) return true;
+  var vs=state.vals||{};
+  if((vs.sell||[]).length||(vs.crowd||[]).length||(vs.scene||[]).length) return true;
+  if((state.hot||[]).length) return true;
+  if(state.res && ((state.res.sell||[]).length||(state.res.crowd||[]).length||(state.res.scene||[]).length||(state.res.hot||[]).length)) return true;
+  var b=state.blocked||{};
+  if((b.sell||[]).length||(b.crowd||[]).length||(b.scene||[]).length) return true;
+  return false;
+}
+/* 清空所有已填内容 → 回到初始状态（商品名不动，因为它是新的查询对象） */
+function resetAll(){
+  ["brand","specAll","skus","research"].forEach(function(id){ var e=$(id); if(e) e.value=""; });
+  var ri=$("resInfo"); if(ri) ri.innerHTML="";
+  var ci=$("csvInfo"); if(ci) ci.innerHTML="未导入 · 将使用内置词根库（离线推算，未经数据校验）";
+  var cf=$("csvFile"); if(cf){ try{ cf.value=""; }catch(e){} }
+  var gi=$("guessInfo"); if(gi) gi.innerHTML="未识别 · 也可直接在下方手动选类目";
+  var pw=$("promptWrap"); if(pw) pw.style.display="none";
+  var pt=$("promptTxt"); if(pt) pt.textContent="";
+  state.vals={sell:[],crowd:[],scene:[]};
+  state.res=null; state.hot=null; state.autoSell=[];
+  state.blocked={sell:[],crowd:[],scene:[]}; state.blockedShow=false;
+  state.poolKeep={}; state.poolSig={}; state.poolRaw={}; state.poolSrc={};
+  LAST=null;
+  var t=$("titles"); if(t) t.innerHTML='<p class="empty">先在左侧配置，点「生成」</p>';
+  var so=$("skuOut"); if(so) so.innerHTML='<p class="empty">—</p>';
+  var cp=$("compliance"); if(cp) cp.innerHTML='<p class="empty">—</p>';
+  var io=$("imgOut"); if(io) io.innerHTML='<p class="empty">—</p>';
+  loadHero(); renderChips();
+}
+
+/* ★ 换商品了（商品名与上次识别的不同）→ 上一个商品填的东西全部作废，先回到初始状态 */
+function maybeResetOnNewProduct(){
+  var nm=$("pname").value.trim();
+  if(!nm) return false;
+  if(nm===(state.lastPname||"")) return false;
+  state.lastPname=nm;
+  if(!isDirty()) return false;
+  resetAll();
+  toast("换了商品 · 已清空上一个商品的内容，重新开始");
+  return true;
+}
 
 function doGuess(silent){
   var name=$("pname").value.trim();
